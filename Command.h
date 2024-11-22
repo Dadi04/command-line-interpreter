@@ -2,6 +2,9 @@
 #define COMMAND_H
 
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <ctime>
 
 class Command {
 public:
@@ -10,7 +13,6 @@ public:
 	Command(const std::string& commandName, const std::string& opt = "", const std::string& arg = "") : name(commandName), option(opt), argument(arg) {}
 
 	virtual void execute() = 0;
-	virtual bool isCorrect(std::string name, std::string option, std::string argument) = 0;
 
 	std::string getName() { return name; }
 	std::string getOption() { return option; }
@@ -21,31 +23,45 @@ protected:
 	std::string argument;
 };
 
-// svaka ova komanda mora da se pojedinacno proveri 
-// moram da razmislim kako ce to da radi
 class Echo : public Command {
-	Echo();
-	virtual bool isCorrect();
+public:
+private:
+	Echo(const std::string& arg) : Command("echo", "", arg) {}
+	void execute() {
+		std::cout << argument << std::endl;
+	}
 };
 
 class Time : public Command {
-	Time();
-	virtual bool isCorrect();
+public:
+	Time() : Command("time", "", "") {}
+	void execute() {
+		// implementirati vreme
+	}
 };
 
 class Date : public Command {
-	Date();
-	virtual bool isCorrect();
+public:
+	Date() : Command("date", "", "") {}
+	void execute() {
+		// implementirati datum
+	}
 };
 
 class Touch	: public Command {
-	Touch();
-	virtual bool isCorrect();
+public:
+	Touch(const std::string& arg) : Command("touch", "", arg) {}
+	void execute() {
+		// implementirati kako napraviti file
+	}
 };
 
 class Wc : public Command {
-	Wc();
-	virtual bool isCorrect();
+public:
+	Wc(const std::string& opt, const std::string& arg) : Command("wc", opt, arg) {}
+	void execute() {
+		// implementirati word count
+	}
 };
 
 #endif

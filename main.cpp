@@ -1,5 +1,4 @@
 // Command
-// SpecificCommand
 // Echo - echo [argument] - Prosledjuje sa ulaza na izlaz, nema opcije, ima opcioni argument tj moze i ne mora da pise ista na ulazu
 // Time - time - U consolu ispisuje vreme, ne moze da ga izbaci u fajl, nema opcije, nema argument
 // Date - date - U consolu ispisuje datum, ne moze da ga izbaci u fajl, nema opcije, nema argument
