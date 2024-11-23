@@ -6,9 +6,11 @@
 #include <fstream>
 #include <ctime>
 
+// treba da napravim metodu koja proverava opcije, trebad a napravim metodu koja proverava argumente, i metodu koja proverava da li je komanda korektna
+
 class Command {
 public:
-	virtual ~Command();
+	~Command() {}
 
 	Command(const std::string& commandName, const std::string& opt = "", const std::string& arg = "") : name(commandName), option(opt), argument(arg) {}
 
@@ -25,8 +27,8 @@ protected:
 
 class Echo : public Command {
 public:
-private:
 	Echo(const std::string& arg) : Command("echo", "", arg) {}
+
 	void execute() {
 		std::cout << argument << std::endl;
 	}
@@ -35,32 +37,96 @@ private:
 class Time : public Command {
 public:
 	Time() : Command("time", "", "") {}
+
 	void execute() {
-		// implementirati vreme
+		time_t timestamp;
+		time(&timestamp);
+		struct tm currentTime;
+
+		if (localtime_s(&currentTime, &timestamp) == 0) {
+			char timeString[9];
+			strftime(timeString, sizeof(timeString), "%H:%M:%S", &currentTime);
+
+			std::cout << timeString << std::endl;
+		}
+		else {
+			std::cerr << "Greska pri dobijanju lokalnog vremena." << std::endl;
+		}
 	}
 };
 
 class Date : public Command {
 public:
 	Date() : Command("date", "", "") {}
+
 	void execute() {
-		// implementirati datum
+		time_t timestamp;
+		time(&timestamp);
+		struct tm currentDate;
+
+		if (localtime_s(&currentDate, &timestamp) == 0) {
+			char dateString[11];
+			strftime(dateString, sizeof(dateString), "%Y-%m-%d", &currentDate);
+
+			std::cout << dateString << std::endl;
+		}
+		else {
+			std::cerr << "Greska pri dobijanju lokalnog datuma." << std::endl;
+		}
+		
 	}
 };
 
 class Touch	: public Command {
 public:
 	Touch(const std::string& arg) : Command("touch", "", arg) {}
+
 	void execute() {
-		// implementirati kako napraviti file
+		std::ifstream file(argument);
+		if (file) {
+			std::cerr << "Greska: Datoteka \"" << argument << "\" vec postoji." << std::endl;
+		}
+		else {
+			std::ofstream newFile(argument);
+			if (newFile) {
+				newFile.close();
+				std::cout << "Datoteka \"" << argument << "\" je uspesno kreairana." << std::endl;
+			}
+			else {
+				std::cerr << "Greska pri kreairanju datoteke \"" << argument << "\"." << std::endl;
+			}
+		}
 	}
 };
 
 class Wc : public Command {
 public:
 	Wc(const std::string& opt, const std::string& arg) : Command("wc", opt, arg) {}
+
 	void execute() {
-		// implementirati word count
+		if (option == "-w") {
+			int count = 0;
+			for (int i = 0; i < argument.length(); i++) {
+				if (std::isspace(argument[i])) {
+					count++;
+				}
+			}
+
+			// Izbroji se n-1 razmaka tj reci, a meni treba n, pa dodajem +1
+			count++;
+
+			std::cout << "Broj reci: " << count << std::endl;
+		}
+		else if (option == "-c") {
+			int count = 0;
+			for (int i = 0; i < argument.length(); i++) {
+				count++;
+			}
+			std::cout << "Broj karaktera: " << count << std::endl;
+		}
+		else {
+			std::cerr << "Ne postoji takva opcija." << std::endl;
+		}
 	}
 };
 

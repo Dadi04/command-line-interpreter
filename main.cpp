@@ -30,3 +30,28 @@
 // LexicalError
 // UnknownError
 // SyntaxError
+
+#include "Command.h"
+#include <iostream>
+
+int main() {
+	Date dateCommand;
+	dateCommand.execute();
+
+	Time timeCommand;
+	timeCommand.execute();
+
+	Echo echoCommand("Hello, World!");
+	echoCommand.execute();
+
+	Touch touchCommand("D:\\Documents\\David\\ETF\\text.txt");
+	touchCommand.execute();
+
+	Wc wcCommand1("-w", "Lorem ipsum dolor sit amet");
+	wcCommand1.execute();
+
+	Wc wcCommand2("-c", "Lorem ipsum dolor sit amet");
+	wcCommand2.execute();
+
+	return 0;
+}
