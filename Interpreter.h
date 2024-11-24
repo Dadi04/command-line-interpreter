@@ -2,15 +2,15 @@
 #define INTERPRETER_H
 
 #include "Command.h"
-#include "CommandParser.h"
+#include "Parser.h"
 #include "CommandFactory.h"
+#include "ErrorHandling.h"
 
 const int MAX_INPUT_LENGHT = 512;
 
 class Interpreter {
 private:
-	CommandFactory commandFactory;
-	CommandParser commandParser;
+	Parser commandParser;
 	std::string prompt = "$ ";
 
 public:
@@ -24,27 +24,15 @@ public:
 
 			if (input[0] == '\0') continue;
 
-			// moguce greske prilikom implementiranje logike za '<' '>>' '>' i '|' i oko logike za izvrsavanje vise komandi odjednom
-			std::string* parsedInput = commandParser.parse(input);
-			if (parsedInput != nullptr) {
-				std::string commandName = parsedInput[0];
-				std::string opt = (parsedInput[1].empty()) ? "" : parsedInput[1];
-				std::string arg = (parsedInput[2].empty()) ? "" : parsedInput[2];
-
-				auto command = commandFactory.createCommand(commandName, opt, arg);
-				delete[] parsedInput;
-
-				if (command) {
-					command->execute();
-					delete command;
-				}
-				else {
-					std::cerr << "Nepoznata komanda: " << commandName << std::endl;
-				}
+			Command* command = commandParser.parseCommand(input);
+			if (command == nullptr) {
+				std::cout << "Nepoznata komanda." << std::endl;
+				continue;
 			}
-			else {
-				std::cerr << "Greska prilikom parsiranja." << std::endl;
-			}
+			command->execute();
+
+			delete command;
+			
 		}
 	}
 };

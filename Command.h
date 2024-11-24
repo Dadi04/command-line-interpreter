@@ -113,14 +113,14 @@ public:
 			}
 			count++;
 
-			std::cout << "Broj reci: " << count << std::endl;
+			std::cout << count << std::endl;
 		}
 		else if (option == "-c") {
 			int count = 0;
 			for (int i = 0; i < argument.length(); i++) {
 				count++;
 			}
-			std::cout << "Broj karaktera: " << count << std::endl;
+			std::cout << count << std::endl;
 		}
 		else {
 			std::cerr << "Ne postoji takva opcija." << std::endl;
