@@ -32,31 +32,28 @@
 // SyntaxError
 
 #include "Command.h"
-#include "Interpreter.h"
+#include "Parser.h"
 #include <iostream>
 
+const int MAX_INPUT_LENGHT = 512;
+
 int main() {
-	//Date dateCommand;
-	//dateCommand.execute();
+	Parser commandParser;
+	char input[MAX_INPUT_LENGHT];
+	std::string prompt = "$ ";
 
-	//Time timeCommand;
-	//timeCommand.execute();
+	while (true) {
+		std::cout << prompt;
+		std::cin.getline(input, MAX_INPUT_LENGHT);
 
-	//Echo echoCommand("Hello, World!");
-	//echoCommand.execute();
+		if (input[0] == '\0') continue;
 
-	//Touch touchCommand("D:\\Documents\\David\\ETF\\text.txt");
-	//touchCommand.execute();
+		Command* command = commandParser.parseCommand(input);
+		if (command == nullptr) continue;
 
-	//Wc wcCommand1("-w", "Lorem ipsum dolor sit amet");
-	//wcCommand1.execute();
+		command->execute();
 
-	//Wc wcCommand2("-c", "Lorem ipsum dolor sit amet");
-	//wcCommand2.execute();
-
-	Interpreter interpreter;
-
-	interpreter.run();
-
+		delete command;
+	}
 	return 0;
 }
