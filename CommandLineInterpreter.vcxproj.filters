@@ -18,13 +18,16 @@
     <ClInclude Include="Command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IOStream.h">
+    <ClInclude Include="CommandParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ErrorHandling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Interpreter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

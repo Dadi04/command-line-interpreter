@@ -32,26 +32,31 @@
 // SyntaxError
 
 #include "Command.h"
+#include "Interpreter.h"
 #include <iostream>
 
 int main() {
-	Date dateCommand;
-	dateCommand.execute();
+	//Date dateCommand;
+	//dateCommand.execute();
 
-	Time timeCommand;
-	timeCommand.execute();
+	//Time timeCommand;
+	//timeCommand.execute();
 
-	Echo echoCommand("Hello, World!");
-	echoCommand.execute();
+	//Echo echoCommand("Hello, World!");
+	//echoCommand.execute();
 
-	Touch touchCommand("D:\\Documents\\David\\ETF\\text.txt");
-	touchCommand.execute();
+	//Touch touchCommand("D:\\Documents\\David\\ETF\\text.txt");
+	//touchCommand.execute();
 
-	Wc wcCommand1("-w", "Lorem ipsum dolor sit amet");
-	wcCommand1.execute();
+	//Wc wcCommand1("-w", "Lorem ipsum dolor sit amet");
+	//wcCommand1.execute();
 
-	Wc wcCommand2("-c", "Lorem ipsum dolor sit amet");
-	wcCommand2.execute();
+	//Wc wcCommand2("-c", "Lorem ipsum dolor sit amet");
+	//wcCommand2.execute();
+
+	Interpreter interpreter;
+
+	interpreter.run();
 
 	return 0;
 }

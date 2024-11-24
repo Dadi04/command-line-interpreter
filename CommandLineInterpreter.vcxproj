@@ -129,8 +129,9 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="ErrorHandling.h" />
+    <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="Interpreter.h" />
-    <ClInclude Include="IOStream.h" />
+    <ClInclude Include="CommandParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

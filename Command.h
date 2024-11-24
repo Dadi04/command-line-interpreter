@@ -111,8 +111,6 @@ public:
 					count++;
 				}
 			}
-
-			// Izbroji se n-1 razmaka tj reci, a meni treba n, pa dodajem +1
 			count++;
 
 			std::cout << "Broj reci: " << count << std::endl;
