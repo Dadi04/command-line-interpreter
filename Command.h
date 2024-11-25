@@ -1,6 +1,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include "ErrorHandler.h"
 #include <string>
 
 class Command {

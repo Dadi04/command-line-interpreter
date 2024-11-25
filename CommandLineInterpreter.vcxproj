@@ -128,7 +128,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
-    <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Parser.h" />

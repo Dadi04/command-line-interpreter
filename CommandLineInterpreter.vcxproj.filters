@@ -21,9 +21,6 @@
     <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ErrorHandling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CommandFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>

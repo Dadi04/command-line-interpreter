@@ -1,6 +1,5 @@
 #include "Interpreter.h"
 #include <iostream>
-#include <string>
 
 const int MAX_INPUT_LENGHT = 512;
 

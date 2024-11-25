@@ -1,5 +1,4 @@
 #include "Command.h"
-#include "Interpreter.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -43,9 +42,6 @@ void Time::execute() {
 
 		std::cout << timeString << std::endl;
 	}
-	else {
-		std::cerr << "Error getting local time." << std::endl;
-	}
 }
 
 void Date::execute() {
@@ -59,10 +55,6 @@ void Date::execute() {
 
 		std::cout << dateString << std::endl;
 	}
-	else {
-		std::cerr << "Error getting local time." << std::endl;
-	}
-
 }
 
 void Touch::execute() {
@@ -77,7 +69,7 @@ void Touch::execute() {
 			std::cout << "File \"" << argument << "\" created successfully." << std::endl;
 		}
 		else {
-			std::cerr << "Error creating file \"" << argument << "\"." << std::endl;
+			std::cerr << "Error: File \"" << argument << "\" could not be created." << std::endl;
 		}
 	}
 }
@@ -98,8 +90,5 @@ void Wc::execute() {
 	}
 	else if (option == "-c") {
 		std::cout << input.length() << std::endl;
-	}
-	else {
-		std::cerr << "Unknown option: " << option << std::endl;
 	}
 }
