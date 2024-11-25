@@ -1,12 +1,18 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <string>
 #include "Command.h"
+#include <string>
 
 class Parser {
 public:
-	Command* parseCommand(const std::string& input);
+	struct ParsedCommand {
+		std::string commandName;
+		std::string commandOpt;
+		std::string commandArg;
+	};
+
+	ParsedCommand parseCommand(std::string input);
 };
 
 

@@ -1,4 +1,5 @@
 #include "Command.h"
+#include "Interpreter.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -6,19 +7,21 @@
 
 std::string Command::getArgumentInput() {
 	std::string input;
-	if (argument.front() == '"' && argument.back() == '"') {
-		input = argument.substr(1, argument.size() - 2);
-	}
-	else {
-		std::ifstream file(argument);
-		if (file.is_open()) {
-			std::ostringstream ss;
-			ss << file.rdbuf();
-			input = ss.str();
-			file.close();
+	if (!argument.empty()) {
+		if (argument.front() == '"' && argument.back() == '"') {
+			input = argument.substr(1, argument.size() - 2);
 		}
 		else {
-			std::cerr << "Error: File \"" << argument << "\" could not be opened.\n";
+			std::ifstream file(argument);
+			if (file.is_open()) {
+				std::ostringstream ss;
+				ss << file.rdbuf();
+				input = ss.str();
+				file.close();
+			}
+			else {
+				std::cerr << "Error: File \"" << argument << "\" could not be opened.";
+			}
 		}
 	}
 	return input;

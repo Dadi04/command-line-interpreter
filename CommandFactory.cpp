@@ -1,7 +1,6 @@
 #include "CommandFactory.h"
-#include "Command.h"
 
-Command* CommandFactory::createCommand(const std::string& name, const std::string& opt, const std::string& arg) {
+Command* CommandFactory::createCommand(std::string name, std::string opt, std::string arg) {
     if (name == "echo") {
         return new Echo(arg);
     }
@@ -16,7 +15,7 @@ Command* CommandFactory::createCommand(const std::string& name, const std::strin
     }
     else if (name == "wc") {
         return new Wc(opt, arg);
-    }
+    } 
     else {
         return nullptr;
     }

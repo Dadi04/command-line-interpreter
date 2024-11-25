@@ -136,9 +136,9 @@
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandFactory.cpp" />
-    <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Interpreter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,7 +7,7 @@ class Command {
 public:
 	~Command() {}
 
-	Command(const std::string& commandName, const std::string& opt = "", const std::string& arg = "") : name(commandName), option(opt), argument(arg) {}
+	Command(std::string commandName, std::string opt, std::string arg) : name(commandName), option(opt), argument(arg) {}
 
 	virtual void execute() = 0;
 

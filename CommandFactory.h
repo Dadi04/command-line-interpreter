@@ -1,13 +1,12 @@
 #ifndef COMMANDFACTORY_H
 #define COMMANDFACTORY_H
 
-#include <string>
 #include "Command.h"
+#include <string>
 
 class CommandFactory {
 public:
-	Command* createCommand(const std::string& name, const std::string& opt, const std::string& arg);
+	Command* createCommand(std::string name, std::string opt, std::string arg);
 };
-
 
 #endif

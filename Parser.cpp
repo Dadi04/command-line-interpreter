@@ -1,11 +1,8 @@
 #include "Parser.h"
-#include "CommandFactory.h"
 #include <iostream>
 
-Command* Parser::parseCommand(const std::string& input) {
-	CommandFactory commandFactory;
-
-	std::string commandName; std::string commandOpt; std::string commandArg;
+Parser::ParsedCommand Parser::parseCommand(std::string input) {
+	ParsedCommand parsedCommand;
 
 	int i = 0;
 	bool inQuotes = false;
@@ -16,7 +13,7 @@ Command* Parser::parseCommand(const std::string& input) {
 	}
 	// Pronalazi ime komande
 	while (i < input.length() && !std::isspace(input[i]) && input[i] != '\t') {
-		commandName += input[i];
+		parsedCommand.commandName += input[i];
 		i++;
 	}
 	// preskace beline izmedju komande i opcije
@@ -26,7 +23,7 @@ Command* Parser::parseCommand(const std::string& input) {
 	// pronalazi opciju ako postoji
 	if (i < input.length() && input[i] == '-') {
 		while (i < input.length() && !std::isspace(input[i]) && input[i] != '\t') {
-			commandOpt += input[i];
+			parsedCommand.commandOpt += input[i];
 			i++;
 		}
 	}
@@ -37,26 +34,21 @@ Command* Parser::parseCommand(const std::string& input) {
 	// pronalazi argument ako postoji
 	if (i < input.length()) {
 		if (input[i] == '"') {
-			commandArg += input[i];
+			parsedCommand.commandArg += input[i];
 			inQuotes = true;
 			i++;
 		}
 		while (i < input.length() && (inQuotes || (!std::isspace(input[i]) && input[i] != '\t'))) {
 			if (input[i] == '"') {
-				commandArg += input[i];
+				parsedCommand.commandArg += input[i];
 				inQuotes = false;
 				i++;
 				break;
 			}
-			commandArg += input[i];
+			parsedCommand.commandArg += input[i];
 			i++;
 		}
 	}
 
-	Command* command = commandFactory.createCommand(commandName, commandOpt, commandArg);
-	if (command == nullptr) {
-		std::cout << "Unknown command: \"" << commandName << "\"" << std::endl;
-	}
-
-	return command;
+	return parsedCommand;
 }
