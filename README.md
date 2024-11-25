@@ -2,14 +2,14 @@
 # Simple Command Line Interpreter
 
 ### Overview
-This project implements a basic Command Line Interpreter (CLI), as part of the requirements for the Object-Oriented Programming course at the Faculty of Electrical Engineering, University of Belgrade. The interpreter supports a subset of commands found in common operating systems, allowing users to execute commands interactively or in batch mode.
+This project implements a basic Command-Line Interpreter (CLI) as part of the requirements for the Object-Oriented Programming course at the Faculty of Electrical Engineering, University of Belgrade. The interpreter supports a subset of commands found in common operating systems, allowing users to execute commands interactively or in batch mode.
 
 ### Features
 The CLI interpreter supports the following functionalities:
 
 * Interactive Command Input: Users can enter commands interactively via the console.
 * Batch Command Input: Commands can be loaded and executed from a text file.
-* Redirection and Piping: Support for input and output redirection as well as command piping.
+* Redirection and Piping: Support for input and output redirection and command piping.
 * Error Handling: Includes error handling for incorrect command syntax, unknown commands, and other execution-related errors.
 
 ### Commands
@@ -36,12 +36,18 @@ todo
 1. Echo Command:
     ```bash
     $ echo "Hello, World!"
-    Output: Hello, World!
+    ```
+    Output:
+    ```bash
+    Hello, World!
     ```
 2. Word Count (wc) Command:
     ```bash
     $ wc -w "Lorem ipsum dolor sit amet"
-    Output: 5
+    ```
+    Output:
+    ```bash
+    5
     ```
 3. Redirection:
     ```bash
