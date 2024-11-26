@@ -1,4 +1,9 @@
 .vs/
 CommandL.c311c5c7/
 x64/
-.user
+
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

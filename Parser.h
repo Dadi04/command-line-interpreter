@@ -13,6 +13,10 @@ public:
 	};
 
 	ParsedCommand parseCommand(std::string input);
+private:
+	void skipWhiteSpace(std::string input, int& i);
+	std::string readToken(std::string input, int& i);
+	std::string readArgument(std::string input, int& i);
 };
 
 

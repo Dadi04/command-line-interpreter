@@ -3,52 +3,59 @@
 
 Parser::ParsedCommand Parser::parseCommand(std::string input) {
 	ParsedCommand parsedCommand;
-
 	int i = 0;
-	bool inQuotes = false;
+	
+	skipWhiteSpace(input, i);
+	
+	parsedCommand.commandName = readToken(input, i);
 
-	// Preskace beline na pocetku
-	while (i < input.length() && (std::isspace(input[i]) || input[i] == '\t')) {
-		i++;
-	}
-	// Pronalazi ime komande
-	while (i < input.length() && !std::isspace(input[i]) && input[i] != '\t') {
-		parsedCommand.commandName += input[i];
-		i++;
-	}
-	// preskace beline izmedju komande i opcije
-	while (i < input.length() && (std::isspace(input[i]) || input[i] == '\t')) {
-		i++;
-	}
-	// pronalazi opciju ako postoji
+	skipWhiteSpace(input, i);
+
 	if (i < input.length() && input[i] == '-') {
-		while (i < input.length() && !std::isspace(input[i]) && input[i] != '\t') {
-			parsedCommand.commandOpt += input[i];
-			i++;
-		}
+		parsedCommand.commandOpt = readToken(input, i);
 	}
-	// preskace beline izmedju opcije i argumenta
-	while (i < input.length() && (std::isspace(input[i]) || input[i] == '\t')) {
-		i++;
-	}
-	// pronalazi argument ako postoji
+
+	skipWhiteSpace(input, i);
+
 	if (i < input.length()) {
-		if (input[i] == '"') {
-			parsedCommand.commandArg += input[i];
-			inQuotes = true;
-			i++;
-		}
-		while (i < input.length() && (inQuotes || (!std::isspace(input[i]) && input[i] != '\t'))) {
-			if (input[i] == '"') {
-				parsedCommand.commandArg += input[i];
-				inQuotes = false;
-				i++;
-				break;
-			}
-			parsedCommand.commandArg += input[i];
-			i++;
-		}
+		parsedCommand.commandArg = readArgument(input, i);
 	}
 
 	return parsedCommand;
+}
+
+void Parser::skipWhiteSpace(std::string input, int& i) {
+	while (i < input.length() && (std::isspace(input[i]) || input[i] == '\t')) {
+		i++;
+	}
+}
+
+std::string Parser::readToken(std::string input, int& i) {
+	std::string token;
+	while (i < input.length() && !std::isspace(input[i]) && input[i] != '\t') {
+		token += input[i];
+		i++;
+	}
+	return token;
+}
+
+std::string Parser::readArgument(std::string input, int& i) {
+	bool inQuotes = false;
+	std::string token;
+	if (input[i] == '"') {
+		token += input[i];
+		inQuotes = true;
+		i++;
+	}
+	while (i < input.length() && (inQuotes || (!std::isspace(input[i]) && input[i] != '\t'))) {
+		if (input[i] == '"') {
+			token += input[i];
+			inQuotes = false;
+			i++;
+			break;
+		}
+		token += input[i];
+		i++;
+	}
+	return token;
 }
