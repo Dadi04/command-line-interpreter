@@ -12,8 +12,14 @@ void Interpreter::run() {
 		std::cout << prompt;
 		std::cin.getline(input, MAX_INPUT_LENGHT);
 
+		// ????
+		// trenutno kada ubacim 512 karakter ode sve u k i nastane infinite loop
+		if (std::cin.gcount() == MAX_INPUT_LENGHT - 1 && input[MAX_INPUT_LENGHT - 2] != '\0') {
+			std::cout << "Input exceeds the maximum lenght of " << MAX_INPUT_LENGHT << " characters" << std::endl;
+			continue;
+		}
+
 		if (input[0] == '\0') continue;
-		// provera da li je preko 512 karaktera
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
 		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg);

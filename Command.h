@@ -10,9 +10,10 @@ public:
 	Command(std::string commandName, std::string opt, std::string arg) : name(commandName), option(opt), argument(arg) {}
 
 	virtual void execute() = 0;
-
-	std::string getArgumentInput();
 protected:
+	// metoda koja odredjuje da li je argument string ili file
+	std::string getArgumentType();
+
 	std::string name;
 	std::string option;
 	std::string argument;
@@ -20,7 +21,7 @@ protected:
 
 class Echo : public Command {
 public:
-	Echo(std::string arg) : Command("echo", "", arg) {}
+	Echo(std::string arg) : Command("echo", "", arg) {};
 
 	void execute();
 };

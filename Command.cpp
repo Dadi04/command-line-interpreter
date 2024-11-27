@@ -4,7 +4,7 @@
 #include <sstream>
 #include <ctime>
 
-std::string Command::getArgumentInput() {
+std::string Command::getArgumentType() {
 	std::string input;
 	if (!argument.empty()) {
 		if (argument.front() == '"' && argument.back() == '"') {
@@ -27,7 +27,7 @@ std::string Command::getArgumentInput() {
 }
 
 void Echo::execute() {
-	std::string input = getArgumentInput();
+	std::string input = getArgumentType();
 	std::cout << input << std::endl;
 }
 
@@ -75,7 +75,7 @@ void Touch::execute() {
 }
 
 void Wc::execute() {
-	std::string input = getArgumentInput();
+	std::string input = getArgumentType();
 
 	if (option == "-w") {
 		int wordCount = 0;
