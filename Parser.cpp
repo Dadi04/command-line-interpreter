@@ -59,3 +59,6 @@ std::string Parser::readArgument(std::string input, int& i) {
 	}
 	return token;
 }
+
+// echo "sajw"qwdas" izbacuje sajw
+// naci poslednji tj zatvoreni navodnik i od toga naci argument

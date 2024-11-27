@@ -20,7 +20,7 @@ protected:
 
 class Echo : public Command {
 public:
-	Echo(const std::string& arg) : Command("echo", "", arg) {}
+	Echo(std::string arg) : Command("echo", "", arg) {}
 
 	void execute();
 };
@@ -41,14 +41,14 @@ public:
 
 class Touch	: public Command {
 public:
-	Touch(const std::string& arg) : Command("touch", "", arg) {}
+	Touch(std::string arg) : Command("touch", "", arg) {}
 
 	void execute();
 };
 
 class Wc : public Command {
 public:
-	Wc(const std::string& opt, const std::string& arg) : Command("wc", opt, arg) {}
+	Wc(std::string opt, std::string arg) : Command("wc", opt, arg) {}
 
 	void execute();
 };

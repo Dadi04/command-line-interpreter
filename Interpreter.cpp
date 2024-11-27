@@ -13,6 +13,7 @@ void Interpreter::run() {
 		std::cin.getline(input, MAX_INPUT_LENGHT);
 
 		if (input[0] == '\0') continue;
+		// provera da li je preko 512 karaktera
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
 		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg);
