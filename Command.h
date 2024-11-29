@@ -5,7 +5,7 @@
 
 class Command {
 public:
-	~Command() {}
+	virtual ~Command() {}
 
 	Command(std::string commandName, std::string opt, std::string arg) : name(commandName), option(opt), argument(arg) {}
 

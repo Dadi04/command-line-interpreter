@@ -12,12 +12,6 @@ void Interpreter::run() {
 		std::cout << prompt;
 		std::cin.getline(input, MAX_INPUT_LENGHT);
 
-		if (std::cin.eof()) {
-			std::cin.clear();
-			std::cin.ignore(MAX_INPUT_LENGHT, '\n');
-			continue;
-		}
-
 		// ????
 		// trenutno kada ubacim 512 karakter ode sve u k i nastane infinite loop
 		if (std::cin.gcount() == MAX_INPUT_LENGHT - 1 && input[MAX_INPUT_LENGHT - 2] != '\0') {
@@ -38,5 +32,10 @@ void Interpreter::run() {
 		command->execute();
 
 		delete command;
+
+		if (std::cin.eof()) {
+			std::cin.clear();
+			continue;
+		}
 	}
 }

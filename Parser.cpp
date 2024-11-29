@@ -4,9 +4,9 @@
 Parser::ParsedCommand Parser::parseCommand(std::string input) {
 	ParsedCommand parsedCommand;
 	int i = 0;
-	
+
 	skipWhiteSpace(input, i);
-	
+
 	parsedCommand.commandName = readToken(input, i);
 
 	skipWhiteSpace(input, i);
@@ -51,17 +51,12 @@ std::string Parser::readArgument(std::string input, int& i) {
 	while (i < input.length()) {
 		if (input[i] == '"') {
 			token += input[i];
-			inQuotes = !inQuotes;
-			i++;
 			if (inQuotes) break;
 		}
 		else {
 			token += input[i];
-			i++;
 		}
+		i++;
 	}
 	return token;
 }
-
-// echo "sajw"qwdas" izbacuje sajw
-// naci poslednji tj zatvoreni navodnik i od toga naci argument
