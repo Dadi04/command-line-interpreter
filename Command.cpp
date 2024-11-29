@@ -1,9 +1,9 @@
 #include "Command.h"
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <ctime>
 
+// metoda koja odredjuje da li je argument string ili file
 std::string Command::getArgumentType() {
 	std::string input;
 	if (!argument.empty()) {
@@ -13,9 +13,13 @@ std::string Command::getArgumentType() {
 		else {
 			std::ifstream file(argument);
 			if (file.is_open()) {
-				std::ostringstream ss;
-				ss << file.rdbuf();
-				input = ss.str();
+				std::string line;
+				while (std::getline(file, line)) {
+					input += line + '\n';
+				}
+				if (!input.empty() && input.back() == '\n') {
+					input.pop_back();
+				}
 				file.close();
 			}
 			else {
@@ -26,8 +30,31 @@ std::string Command::getArgumentType() {
 	return input;
 }
 
+std::string Command::ifArgumentEmpty() {
+	if (argument.empty()) {
+		std::string line;
+		while (true) {
+			if (!std::getline(std::cin, line)) break;
+			argument += line + '\n';
+		}
+	}
+
+	return argument;
+}
+
 void Echo::execute() {
-	std::string input = getArgumentType();
+	std::string input;
+	if (argument.empty()) {
+		input = ifArgumentEmpty();
+	}
+	else {
+		input = getArgumentType();
+	}
+
+	if (input.back() == '\n') {
+		input.pop_back();
+	}
+
 	std::cout << input << std::endl;
 }
 
@@ -51,7 +78,7 @@ void Date::execute() {
 
 	if (localtime_s(&currentDate, &timestamp) == 0) {
 		char dateString[11];
-		strftime(dateString, sizeof(dateString), "%Y-%m-%d", &currentDate);
+		strftime(dateString, sizeof(dateString), "%d.%m.%Y", &currentDate);
 
 		std::cout << dateString << std::endl;
 	}
@@ -75,16 +102,29 @@ void Touch::execute() {
 }
 
 void Wc::execute() {
-	std::string input = getArgumentType();
+	std::string input;
+	if (argument.empty()) {
+		input = ifArgumentEmpty();
+	}
+	else {
+		input = getArgumentType();
+	}
 
 	if (option == "-w") {
 		int wordCount = 0;
+		bool inWord = false;
 		for (int i = 0; i < input.length(); i++) {
 			if (std::isspace(input[i])) {
 				wordCount++;
+				inWord = false;
+			}
+			else {
+				inWord = true;
 			}
 		}
-		wordCount++;
+		if (inWord) {
+			wordCount++;
+		}
 
 		std::cout << wordCount << std::endl;
 	}

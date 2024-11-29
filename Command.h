@@ -13,6 +13,7 @@ public:
 protected:
 	// metoda koja odredjuje da li je argument string ili file
 	std::string getArgumentType();
+	std::string ifArgumentEmpty();
 
 	std::string name;
 	std::string option;
