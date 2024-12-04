@@ -1,21 +1,21 @@
 #include "Interpreter.h"
 #include <iostream>
 
-const int MAX_INPUT_LENGHT = 512;
+const int MAX_INPUT_LENGTH = 512;
 
 void Interpreter::run() {
 	Parser commandParser;
 	CommandFactory commandFactory;
-	char input[MAX_INPUT_LENGHT];
+	char input[MAX_INPUT_LENGTH];
 
 	while (true) {
 		std::cout << prompt;
-		std::cin.getline(input, MAX_INPUT_LENGHT);
+		std::cin.getline(input, MAX_INPUT_LENGTH);
 
-		// ????
-		// trenutno kada ubacim 512 karakter ode sve u k i nastane infinite loop
-		if (std::cin.gcount() == MAX_INPUT_LENGHT - 1 && input[MAX_INPUT_LENGHT - 2] != '\0') {
-			std::cout << "Input exceeds the maximum lenght of " << MAX_INPUT_LENGHT << " characters" << std::endl;
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::cout << "Input exceeds the maximum length of " << MAX_INPUT_LENGTH << " characters." << std::endl;
 			continue;
 		}
 
@@ -28,7 +28,7 @@ void Interpreter::run() {
 			std::cout << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
 			continue;
 		}
-
+		
 		command->execute();
 
 		delete command;
