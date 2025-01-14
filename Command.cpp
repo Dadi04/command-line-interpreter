@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <sstream>
 
 // metoda koja odredjuje da li je argument string ili file
 std::string Command::getArgumentType() {
@@ -58,6 +59,15 @@ void Echo::execute() {
 	std::cout << input << std::endl;
 }
 
+void Prompt::execute() {
+	this->promptSign = argument + " ";
+}
+
+std::string Prompt::promptSign = "$ ";
+std::string Prompt::getPromptSign() {
+	return promptSign;
+}
+
 void Time::execute() {
 	time_t timestamp;
 	time(&timestamp);
@@ -101,6 +111,43 @@ void Touch::execute() {
 	}
 }
 
+void Truncate::execute() {
+	std::ifstream file(argument);
+	if (!file) {
+		std::cerr << "Error: File \"" << argument << "\" does not exist." << std::endl;
+		file.close();
+	}
+	else {
+		std::ofstream file(argument, std::ios::trunc);
+		if (file.is_open()) {
+			std::cout << "File content cleared successfully." << std::endl;
+			file.close();
+		}
+		else {
+			std::cerr << "Error: Failed to open \"" << argument << "\"." << std::endl;
+		}
+	}
+	
+}
+
+void Rm::execute() {
+	std::ifstream file(argument);
+	if (!file) {
+		std::cerr << "Error: File \"" << argument << "\" does not exist." << std::endl;
+		file.close();
+	}
+	else {
+		file.close();
+		int status = remove(argument.c_str());
+		if (status == 0) {
+			std::cout << "File deleted successfully." << std::endl;
+		}
+		else {
+			std::cerr << "Error: Failed to delete \"" << argument << "\"." << std::endl;
+		}
+	}
+}
+
 void Wc::execute() {
 	std::string input;
 	if (argument.empty()) {
@@ -131,4 +178,44 @@ void Wc::execute() {
 	else if (option == "-c") {
 		std::cout << input.length() << std::endl;
 	}
+}
+
+//void Tr::execute() {
+//
+//}
+
+void Head::execute() {
+	std::string input;
+	if (argument.empty()) {
+		input = ifArgumentEmpty();
+	}
+	else {
+		input = getArgumentType();
+	}
+
+	if (!option.empty()) {
+		int n = stoi(option.substr(2, option.length() - 2));
+		if (n > 0 && n < 100000) {
+			std::istringstream stream(input);
+			std::string line;
+			for (int i = 0; i < n; i++) {
+				if (std::getline(stream, line)) {
+					std::cout << line << std::endl;
+				}
+				else {
+					break;
+				}
+			}
+		}
+		else {
+			std::cerr << "Error: n count is either smaller than 1 or bigger than 99999" << std::endl;
+		}
+	}
+	else {
+		std::cerr << "Error: Missing option -n<count>" << std::endl;
+	}
+}
+
+void Batch::execute() {
+
 }

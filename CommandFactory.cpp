@@ -4,6 +4,9 @@ Command* CommandFactory::createCommand(std::string name, std::string opt, std::s
     if (name == "echo") {
         return new Echo(arg);
     }
+    else if (name == "prompt") {
+        return new Prompt(arg);
+    }
     else if (name == "time") {
         return new Time();
     }
@@ -13,9 +16,24 @@ Command* CommandFactory::createCommand(std::string name, std::string opt, std::s
     else if (name == "touch") {
         return new Touch(arg);
     }
+    else if (name == "truncate") {
+        return new Truncate(arg);
+    }
+    else if (name == "rm") {
+        return new Rm(arg);
+    }
     else if (name == "wc") {
         return new Wc(opt, arg);
     } 
+    //else if (name == "tr") {
+    //    return new Tr(arg);
+    //}
+    else if (name == "head") {
+        return new Head(opt, arg);
+    }
+    else if (name == "batch") {
+        return new Batch(arg);
+    }
     else {
         return nullptr;
     }

@@ -9,7 +9,7 @@ void Interpreter::run() {
 	char input[MAX_INPUT_LENGTH];
 
 	while (true) {
-		std::cout << prompt;
+		std::cout << Prompt::getPromptSign();
 		std::cin.getline(input, MAX_INPUT_LENGTH);
 
 		if (std::cin.fail()) {

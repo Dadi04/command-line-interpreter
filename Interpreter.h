@@ -9,8 +9,6 @@
 class Interpreter {
 public:
 	void run();
-private:
-	std::string prompt = "$ ";
 };
 
 #endif

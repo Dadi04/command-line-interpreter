@@ -27,6 +27,16 @@ public:
 	void execute();
 };
 
+class Prompt : public Command {
+public:
+	Prompt(std::string arg) : Command("prompt", "", arg) {};
+	static std::string getPromptSign();
+
+	void execute();
+private:
+	static std::string promptSign;
+};
+
 class Time : public Command {
 public:
 	Time() : Command("time", "", "") {}
@@ -48,9 +58,48 @@ public:
 	void execute();
 };
 
+class Truncate : public Command {
+public:
+	Truncate(std::string arg) : Command("truncate", "", arg) {}
+
+	void execute();
+};
+
+class Rm : public Command {
+public:
+	Rm(std::string arg) : Command("rm", "", arg) {}
+
+	void execute();
+};
+
 class Wc : public Command {
 public:
 	Wc(std::string opt, std::string arg) : Command("wc", opt, arg) {}
+
+	void execute();
+};
+
+//class Tr : public Command {
+//public:
+//	Tr(std::string arg, std::string what, std::string with) : Command("tr", "", arg), what(what), with(with) {}
+//
+//	void execute();
+//private:
+//	std::string what;
+//	std::string with;
+//};
+
+class Head : public Command {
+public:
+	Head(std::string opt, std::string arg) : Command("head", opt, arg) {}
+
+	void execute();
+};
+
+
+class Batch : public Command {
+public:
+	Batch(std::string arg) : Command("batch", "", arg) {}
 
 	void execute();
 };
