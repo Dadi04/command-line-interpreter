@@ -15,7 +15,7 @@ void Interpreter::run() {
 		if (std::cin.fail()) {
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			std::cout << "Input exceeds the maximum length of " << MAX_INPUT_LENGTH << " characters." << std::endl;
+			std::cerr << "Input exceeds the maximum length of " << MAX_INPUT_LENGTH << " characters." << std::endl;
 			continue;
 		}
 
@@ -24,8 +24,8 @@ void Interpreter::run() {
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
 		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg);
 
-		if (command == nullptr) {
-			std::cout << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
+		if (!command) {
+			std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
 			continue;
 		}
 		

@@ -41,27 +41,24 @@ std::string Parser::readToken(std::string input, int& i) {
 
 std::string Parser::readArgument(std::string input, int& i) {
 	std::string token;
-	bool inQuotes = false;
+
+	if (i >= input.length() || input[i] != '"') {
+		return token;
+	}
+
+	i++;
 
 	while (i < input.length()) {
-		if (input[i] == '"') {
-			if (inQuotes) {
-				inQuotes = false;
-			}
-			else {
-				inQuotes = true;
-			}
-			token += input[i];
-		}
-		else if (!inQuotes && std::isspace(input[i])) {
+		if (input[i] == '"' && (i + 1 >= input.length() || input[i + 1] == ' ')) {
 			break;
 		}
-		else {
-			token += input[i];
-		}
+		token += input[i];
 		i++;
 	}
 
-	return token;
+	if (i < input.length() && input[i] == '"') {
+		i++;
+	}
 
+	return "\"" + token + "\"";
 }

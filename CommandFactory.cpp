@@ -1,4 +1,5 @@
 #include "CommandFactory.h"
+#include "Command.h"
 
 Command* CommandFactory::createCommand(std::string name, std::string opt, std::string arg) {
     if (name == "echo") {

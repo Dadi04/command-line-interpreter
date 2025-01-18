@@ -1,8 +1,9 @@
 #ifndef COMMANDFACTORY_H
 #define COMMANDFACTORY_H
 
-#include "Command.h"
 #include <string>
+
+class Command;
 
 class CommandFactory {
 public:
