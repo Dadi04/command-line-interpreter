@@ -217,5 +217,13 @@ void Head::execute() {
 }
 
 void Batch::execute() {
+	std::string input;
+	if (argument.empty()) {
+		input = ifArgumentEmpty();
+	}
+	else {
+		input = getArgumentType();
+	}
 
+	
 }
