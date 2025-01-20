@@ -26,7 +26,8 @@ std::string Command::getArgumentType() {
 				file.close();
 			}
 			else {
-				std::cerr << "Error: File \"" << argument << "\" could not be opened." << std::endl;
+				std::cerr << "Error: File \"" << argument << "\" does not exist." << std::endl;
+				return "";
 			}
 		}
 	}
@@ -52,6 +53,7 @@ void Echo::execute() {
 	}
 	else {
 		input = getArgumentType();
+		if (input.empty()) return;
 	}
 
 	if (input.back() == '\n') {
@@ -157,6 +159,7 @@ void Wc::execute() {
 	}
 	else {
 		input = getArgumentType();
+		if (input.empty()) return;
 	}
 
 	if (option == "-w") {
@@ -180,11 +183,108 @@ void Wc::execute() {
 	else if (option == "-c") {
 		std::cout << input.length() << std::endl;
 	}
+	else {
+		std::cerr << "Error: Command wc must have either option -w or -c." << std::endl;
+	}
 }
 
-//void Tr::execute() {
-//
-//}
+void Tr::execute() {
+	// nisam siguran da li treba da edituje text u fajlu ili samo da izbacuje u konzolu rezultat
+	if (argument.empty()) {
+		std::cerr << "Error: Command tr must have an argument" << std::endl;
+		return;
+	}
+	else if (what.empty()) {
+		std::cerr << "Error: Command tr must have a 'what' you want to replace with" << std::endl;
+		return;
+	}
+	else {
+		std::string input = getArgumentType();
+		if (input.empty()) return;
+		int start_pos = 0;
+		while ((start_pos = input.find(what, start_pos)) != std::string::npos) {
+			input.replace(start_pos, what.length(), with);
+			start_pos += with.length();
+		}
+		std::cout << input << std::endl;
+	}
+}
+
+void Tr::parseArguments(std::string arg) {
+	std::string argument, what, with;
+	int i = 0;
+	if (arg.empty()) {
+		return;
+	}
+
+	if (i < arg.length() && arg[i] == '"') {
+		i++;
+		while (i < arg.length()) {
+			if (arg[i] == '"') {
+				i++;
+				break;
+			}
+			argument += arg[i];
+			i++;
+		}
+		if (!argument.empty()) {
+			this->argument = '\"' + argument + '\"';
+		}
+		else {
+			this->argument = "";
+			return;
+		}	
+	}
+	else if (i < arg.length()) {
+		while (i < arg.length()) {
+			if (arg[i] == '"') {
+				break;
+			}
+			argument += arg[i];
+			i++;
+		}
+		this->argument = argument;
+	}
+	else {
+		return;
+	}
+	
+	while (i < arg.length() && (std::isspace(arg[i]) || arg[i] == '\t')) {
+		i++;
+	}
+
+	if (i < arg.length() && arg[i] == '"') {
+		i++;
+		while (i < arg.length()) {
+			if (arg[i] == '"') {
+				i++;
+				break;
+			}
+			what += arg[i];
+			i++;
+		}
+		this->what = what;
+	}
+	else {
+		return;
+	}
+
+	while (i < arg.length() && (std::isspace(arg[i]) || arg[i] == '\t')) {
+		i++;
+	}
+
+	if (i < arg.length() && arg[i] == '"') {
+		i++;
+		while (i < arg.length()) {
+			if (arg[i] == '"') {
+				break;
+			}
+			with += arg[i];
+			i++;
+		}
+		this->with = with;
+	}	
+}
 
 void Head::execute() {
 	std::string input;
@@ -193,6 +293,7 @@ void Head::execute() {
 	}
 	else {
 		input = getArgumentType();
+		if (input.empty()) return;
 	}
 
 	if (!option.empty()) {
@@ -225,6 +326,7 @@ void Batch::execute() {
 	}
 	else {
 		input = getArgumentType();
+		if (input.empty()) return;
 	}
 
 	int maxCommands = 1;

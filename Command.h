@@ -79,15 +79,19 @@ public:
 	void execute();
 };
 
-//class Tr : public Command {
-//public:
-//	Tr(std::string arg, std::string what, std::string with) : Command("tr", "", arg), what(what), with(with) {}
-//
-//	void execute();
-//private:
-//	std::string what;
-//	std::string with;
-//};
+class Tr : public Command {
+public:
+	Tr(std::string arg) : Command("tr", "", arg) {
+		parseArguments(arg);
+	}
+
+	void execute();
+private:
+	std::string what;
+	std::string with;
+
+	void parseArguments(std::string arg);
+};
 
 class Head : public Command {
 public:

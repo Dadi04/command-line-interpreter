@@ -63,7 +63,7 @@ std::string Parser::readArgument(std::string input, int& i) {
 		return "\"" + token + "\"";
 	}
 
-	while (i < input.length() && !std::isspace(input[i])) {
+	while (i < input.length()) {
 		token += input[i];
 		i++;
 	}

@@ -26,9 +26,9 @@ Command* CommandFactory::createCommand(std::string name, std::string opt, std::s
     else if (name == "wc") {
         return new Wc(opt, arg);
     } 
-    //else if (name == "tr") {
-    //    return new Tr(arg);
-    //}
+    else if (name == "tr") {
+        return new Tr(arg);
+    }
     else if (name == "head") {
         return new Head(opt, arg);
     }
