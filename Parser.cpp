@@ -17,8 +17,22 @@ Parser::ParsedCommand Parser::parseCommand(std::string input) {
 
 	skipWhiteSpace(input, i);
 
-	if (i < input.length()) {
+	if (i < input.length() && input[i] != '<' && input[i] != '>') {
 		parsedCommand.commandArg = readArgument(input, i);
+	}
+
+	skipWhiteSpace(input, i);
+
+	while (i < input.length()) {
+		Redirection redirection = readStreamFile(input, i);
+		if (redirection.type != Redirection::StreamType::None) {
+			parsedCommand.streams.push_back(redirection);
+		}
+		skipWhiteSpace(input, i);
+
+		if (redirection.type == Redirection::StreamType::Input) {
+			parsedCommand.commandArg = redirection.file;
+		}
 	}
 
 	return parsedCommand;
@@ -69,4 +83,34 @@ std::string Parser::readArgument(std::string input, int& i) {
 	}
 
 	return token;
+}
+
+Redirection Parser::readStreamFile(std::string input, int& i) {
+	Redirection redirection = { Redirection::StreamType::None, "" };
+
+	skipWhiteSpace(input, i);
+	if (i >= input.length()) return redirection;
+
+	if (input[i] == '<') {
+		redirection.type = Redirection::StreamType::Input;
+		i++;
+	}
+	else if (input[i] == '>') {
+		i++;
+		if (i < input.length() && input[i] == '>') {
+			redirection.type = Redirection::StreamType::Append;
+			i++;
+		}
+		else {
+			redirection.type = Redirection::StreamType::Output;
+		}
+	}
+	else {
+		return redirection;
+	}
+
+	skipWhiteSpace(input, i);
+	redirection.file = readToken(input, i);
+
+	return redirection;
 }

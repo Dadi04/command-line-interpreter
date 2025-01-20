@@ -131,6 +131,7 @@
     <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="Redirection.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />

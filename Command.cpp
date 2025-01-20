@@ -1,6 +1,7 @@
 #include "Command.h"
 #include "Parser.h"
 #include "CommandFactory.h"
+//#include "Interpreter.h" pokusati ovaki da se dobije znak $, tj da se on nalazi u Interpreter.h kao public
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -46,6 +47,54 @@ std::string Command::ifArgumentEmpty() {
 	return argument;
 }
 
+void Command::Redirect(std::string input) {
+	bool hasOutputRedirection = false;
+	bool hasInputRedirection = false;
+	std::string inputContent;
+
+	for (int i = 0; i < streams.size(); i++) {
+		Redirection& stream = streams[i];
+		if (stream.type == Redirection::Output || stream.type == Redirection::Append) {
+			std::ofstream outputFile;
+			if (stream.type == Redirection::Output) {
+				outputFile.open(stream.file, std::ios::trunc);
+			}
+			else if (stream.type == Redirection::Append) {
+				outputFile.open(stream.file, std::ios::app);
+			}
+
+			if (!outputFile.is_open()) {
+				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
+				return;
+			}
+			outputFile << input << std::endl;
+			outputFile.close();
+			hasOutputRedirection = true;
+		}
+		else if (stream.type == Redirection::Input) {
+			std::ifstream inputFile;
+			inputFile.open(stream.file);
+			if (!inputFile.is_open()) {
+				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
+				return;
+			}
+			std::string fileContent;
+			std::getline(inputFile, inputContent, '\0');
+			if (inputContent.back() == '\n') {
+				inputContent.pop_back();
+			}
+			inputFile.close();
+			hasInputRedirection = true;
+		}
+	}
+	if (hasInputRedirection) {
+		input = inputContent;
+	}
+	if (!hasOutputRedirection) {
+		std::cout << input << std::endl;
+	}
+}
+
 void Echo::execute() {
 	std::string input;
 	if (argument.empty()) {
@@ -60,7 +109,7 @@ void Echo::execute() {
 		input.pop_back();
 	}
 
-	std::cout << input << std::endl;
+	Redirect(input);
 }
 
 void Prompt::execute() {
@@ -81,7 +130,7 @@ void Time::execute() {
 		char timeString[9];
 		strftime(timeString, sizeof(timeString), "%H:%M:%S", &currentTime);
 
-		std::cout << timeString << std::endl;
+		Redirect(timeString);
 	}
 }
 
@@ -94,7 +143,7 @@ void Date::execute() {
 		char dateString[11];
 		strftime(dateString, sizeof(dateString), "%d.%m.%Y", &currentDate);
 
-		std::cout << dateString << std::endl;
+		Redirect(dateString);
 	}
 }
 
@@ -131,7 +180,6 @@ void Truncate::execute() {
 			std::cerr << "Error: Failed to open \"" << argument << "\"." << std::endl;
 		}
 	}
-	
 }
 
 void Rm::execute() {
@@ -178,10 +226,12 @@ void Wc::execute() {
 			wordCount++;
 		}
 
-		std::cout << wordCount << std::endl;
+		//std::cout << wordCount << std::endl;
+		Redirect(std::to_string(wordCount));
 	}
 	else if (option == "-c") {
-		std::cout << input.length() << std::endl;
+		//std::cout << input.length() << std::endl;
+		Redirect(std::to_string(input.length()));
 	}
 	else {
 		std::cerr << "Error: Command wc must have either option -w or -c." << std::endl;
@@ -189,7 +239,6 @@ void Wc::execute() {
 }
 
 void Tr::execute() {
-	// nisam siguran da li treba da edituje text u fajlu ili samo da izbacuje u konzolu rezultat
 	if (argument.empty()) {
 		std::cerr << "Error: Command tr must have an argument" << std::endl;
 		return;
@@ -201,12 +250,13 @@ void Tr::execute() {
 	else {
 		std::string input = getArgumentType();
 		if (input.empty()) return;
-		int start_pos = 0;
-		while ((start_pos = input.find(what, start_pos)) != std::string::npos) {
-			input.replace(start_pos, what.length(), with);
-			start_pos += with.length();
+		size_t counter = 0;
+		while ((counter = input.find(what, counter)) != std::string::npos) {
+			input.replace(counter, what.length(), with);
+			counter += with.length();
 		}
-		std::cout << input << std::endl;
+		//std::cout << input << std::endl;
+		Redirect(input);
 	}
 }
 
@@ -303,7 +353,8 @@ void Head::execute() {
 			std::string line;
 			for (int i = 0; i < n; i++) {
 				if (std::getline(stream, line)) {
-					std::cout << line << std::endl;
+					//std::cout << line << std::endl;
+					Redirect(line);
 				}
 				else {
 					break;
@@ -365,7 +416,7 @@ void Batch::execute() {
 		CommandFactory commandFactory;
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(commandsArray[i]);
-		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg);
+		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 
 		if (!command) {
 			std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;

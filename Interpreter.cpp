@@ -1,4 +1,8 @@
 #include "Interpreter.h"
+#include "Parser.h"
+#include "Command.h"
+#include "CommandFactory.h"
+#include <string>
 #include <iostream>
 
 const int MAX_INPUT_LENGTH = 512;
@@ -22,7 +26,7 @@ void Interpreter::run() {
 		if (input[0] == '\0') continue;
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
-		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg);
+		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 
 		if (!command) {
 			std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
