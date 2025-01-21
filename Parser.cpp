@@ -30,7 +30,7 @@ Parser::ParsedCommand Parser::parseCommand(std::string input) {
 		}
 		skipWhiteSpace(input, i);
 
-		if (redirection.type == Redirection::StreamType::Input) {
+		if (redirection.type == Redirection::StreamType::Input && parsedCommand.commandArg.empty()) {
 			parsedCommand.commandArg = redirection.file;
 		}
 	}

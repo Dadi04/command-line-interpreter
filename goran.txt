@@ -1,6 +1,3 @@
-goga radocaj
-goga radocaj
-goga radocaj
-goga radocaj
-goga radocaj
-kurcina
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Duis ultricies finibus leo, nec ultricies lacus ullamcorper sed. Mauris sit amet rutrum velit, non posuere felis. 
+Nullam viverra nulla at erat pulvinar, sit amet euismod mauris sodales. Ut rutrum est sed suscipit scelerisque. 

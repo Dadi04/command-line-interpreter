@@ -1,7 +1,6 @@
 #include "Command.h"
 #include "Parser.h"
 #include "CommandFactory.h"
-//#include "Interpreter.h" pokusati ovaki da se dobije znak $, tj da se on nalazi u Interpreter.h kao public
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -47,10 +46,27 @@ std::string Command::ifArgumentEmpty() {
 	return argument;
 }
 
-void Command::Redirect(std::string input) {
-	bool hasOutputRedirection = false;
-	bool hasInputRedirection = false;
-	std::string inputContent;
+void Command::RedirectInput(std::string& input) {
+	for (int i = 0; i < streams.size(); i++) {
+		Redirection& stream = streams[i];
+		if (stream.type == Redirection::Input) {
+			std::ifstream inputFile;
+			inputFile.open(stream.file);
+			if (!inputFile.is_open()) {
+				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
+				return;
+			}
+			
+			std::stringstream buffer;
+			buffer << inputFile.rdbuf();
+			input = buffer.str();
+			inputFile.close();
+		}
+	}
+}
+
+void Command::RedirectOutput(std::string input) {
+	bool redirected = false;
 
 	for (int i = 0; i < streams.size(); i++) {
 		Redirection& stream = streams[i];
@@ -67,30 +83,13 @@ void Command::Redirect(std::string input) {
 				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
 				return;
 			}
-			outputFile << input << std::endl;
+			outputFile << input;
 			outputFile.close();
-			hasOutputRedirection = true;
-		}
-		else if (stream.type == Redirection::Input) {
-			std::ifstream inputFile;
-			inputFile.open(stream.file);
-			if (!inputFile.is_open()) {
-				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
-				return;
-			}
-			std::string fileContent;
-			std::getline(inputFile, inputContent, '\0');
-			if (inputContent.back() == '\n') {
-				inputContent.pop_back();
-			}
-			inputFile.close();
-			hasInputRedirection = true;
+			redirected = true;
+			break;
 		}
 	}
-	if (hasInputRedirection) {
-		input = inputContent;
-	}
-	if (!hasOutputRedirection) {
+	if (!redirected) {
 		std::cout << input << std::endl;
 	}
 }
@@ -105,11 +104,13 @@ void Echo::execute() {
 		if (input.empty()) return;
 	}
 
+	RedirectInput(input);
+
 	if (input.back() == '\n') {
 		input.pop_back();
 	}
 
-	Redirect(input);
+	RedirectOutput(input);
 }
 
 void Prompt::execute() {
@@ -130,7 +131,7 @@ void Time::execute() {
 		char timeString[9];
 		strftime(timeString, sizeof(timeString), "%H:%M:%S", &currentTime);
 
-		Redirect(timeString);
+		RedirectOutput(timeString);
 	}
 }
 
@@ -143,7 +144,7 @@ void Date::execute() {
 		char dateString[11];
 		strftime(dateString, sizeof(dateString), "%d.%m.%Y", &currentDate);
 
-		Redirect(dateString);
+		RedirectOutput(dateString);
 	}
 }
 
@@ -173,7 +174,7 @@ void Truncate::execute() {
 	else {
 		std::ofstream file(argument, std::ios::trunc);
 		if (file.is_open()) {
-			std::cout << "File content cleared successfully." << std::endl;
+			std::cout << "Content in file \"" << argument << "\" deleted successfully." << std::endl;
 			file.close();
 		}
 		else {
@@ -192,7 +193,7 @@ void Rm::execute() {
 		file.close();
 		int status = remove(argument.c_str());
 		if (status == 0) {
-			std::cout << "File deleted successfully." << std::endl;
+			std::cout << "File \"" << argument << "\" deleted successfully." << std::endl;
 		}
 		else {
 			std::cerr << "Error: Failed to delete \"" << argument << "\"." << std::endl;
@@ -210,6 +211,8 @@ void Wc::execute() {
 		if (input.empty()) return;
 	}
 
+	RedirectInput(input);
+
 	if (option == "-w") {
 		int wordCount = 0;
 		bool inWord = false;
@@ -226,12 +229,12 @@ void Wc::execute() {
 			wordCount++;
 		}
 
-		//std::cout << wordCount << std::endl;
-		Redirect(std::to_string(wordCount));
+		std::string wordCountString = std::to_string(wordCount);
+		RedirectOutput(wordCountString);
 	}
 	else if (option == "-c") {
-		//std::cout << input.length() << std::endl;
-		Redirect(std::to_string(input.length()));
+		std::string CharacterCountString = std::to_string(input.length());
+		RedirectOutput(CharacterCountString);
 	}
 	else {
 		std::cerr << "Error: Command wc must have either option -w or -c." << std::endl;
@@ -255,8 +258,8 @@ void Tr::execute() {
 			input.replace(counter, what.length(), with);
 			counter += with.length();
 		}
-		//std::cout << input << std::endl;
-		Redirect(input);
+		RedirectInput(input);
+		RedirectOutput(input);
 	}
 }
 
@@ -334,6 +337,8 @@ void Tr::parseArguments(std::string arg) {
 		}
 		this->with = with;
 	}	
+
+	// odraditi parsiranje AAAAAAAAAAAAAAA
 }
 
 void Head::execute() {
@@ -346,20 +351,26 @@ void Head::execute() {
 		if (input.empty()) return;
 	}
 
-	if (!option.empty()) {
+	RedirectInput(input);
+
+	if (!option.empty() && option.rfind("-n", 0) == 0) {
 		int n = stoi(option.substr(2, option.length() - 2));
 		if (n > 0 && n < 100000) {
 			std::istringstream stream(input);
 			std::string line;
+			std::string output;
 			for (int i = 0; i < n; i++) {
 				if (std::getline(stream, line)) {
-					//std::cout << line << std::endl;
-					Redirect(line);
+					output += line + "\n";
 				}
 				else {
 					break;
 				}
 			}
+			if (output.back() == '\n') {
+				output.pop_back();
+			}
+			RedirectOutput(output);
 		}
 		else {
 			std::cerr << "Error: n count is either smaller than 1 or bigger than 99999" << std::endl;

@@ -16,7 +16,8 @@ protected:
 	// metoda koja odredjuje da li je argument string ili file
 	std::string getArgumentType();
 	std::string ifArgumentEmpty();
-	void Redirect(std::string input);
+	void RedirectInput(std::string& input);
+	void RedirectOutput(std::string input);
 
 	std::string name;
 	std::string option;
