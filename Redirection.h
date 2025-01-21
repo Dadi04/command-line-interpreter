@@ -12,6 +12,9 @@ struct Redirection {
 	};
 	StreamType type;
 	std::string file;
+
+	bool redirectInput(std::string& input);
+	bool redirectOutput(std::string output);
 };
 
 #endif

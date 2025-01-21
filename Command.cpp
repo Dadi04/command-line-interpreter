@@ -1,10 +1,11 @@
 #include "Command.h"
 #include "Parser.h"
 #include "CommandFactory.h"
+#include "Redirection.h"
 #include <iostream>
 #include <fstream>
-#include <ctime>
 #include <sstream>
+#include <ctime>
 
 // metoda koja odredjuje da li je argument string ili file
 std::string Command::getArgumentType() {
@@ -47,51 +48,20 @@ std::string Command::ifArgumentEmpty() {
 }
 
 void Command::RedirectInput(std::string& input) {
-	for (int i = 0; i < streams.size(); i++) {
-		Redirection& stream = streams[i];
-		if (stream.type == Redirection::Input) {
-			std::ifstream inputFile;
-			inputFile.open(stream.file);
-			if (!inputFile.is_open()) {
-				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
-				return;
-			}
-			
-			std::stringstream buffer;
-			buffer << inputFile.rdbuf();
-			input = buffer.str();
-			inputFile.close();
+	for (Redirection& stream : streams) {
+		if (stream.redirectInput(input)) {
+			return;
 		}
 	}
 }
 
 void Command::RedirectOutput(std::string input) {
-	bool redirected = false;
-
-	for (int i = 0; i < streams.size(); i++) {
-		Redirection& stream = streams[i];
-		if (stream.type == Redirection::Output || stream.type == Redirection::Append) {
-			std::ofstream outputFile;
-			if (stream.type == Redirection::Output) {
-				outputFile.open(stream.file, std::ios::trunc);
-			}
-			else if (stream.type == Redirection::Append) {
-				outputFile.open(stream.file, std::ios::app);
-			}
-
-			if (!outputFile.is_open()) {
-				std::cerr << "Error: File \"" << stream.file << "\" does not exist." << std::endl;
-				return;
-			}
-			outputFile << input;
-			outputFile.close();
-			redirected = true;
-			break;
+	for (Redirection& stream : streams) {
+		if (stream.redirectOutput(input)) {
+			return;
 		}
 	}
-	if (!redirected) {
-		std::cout << input << std::endl;
-	}
+	std::cout << input << std::endl;
 }
 
 void Echo::execute() {

@@ -13,7 +13,6 @@ public:
 
 	virtual void execute() = 0;
 protected:
-	// metoda koja odredjuje da li je argument string ili file
 	std::string getArgumentType();
 	std::string ifArgumentEmpty();
 	void RedirectInput(std::string& input);
