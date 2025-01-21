@@ -241,30 +241,32 @@ void Wc::execute() {
 	}
 }
 
+// nema ulaznu redirekciju tj ne prihvata znak <, ukoliko dodje znak < program zabode
 void Tr::execute() {
 	if (argument.empty()) {
 		std::cerr << "Error: Command tr must have an argument" << std::endl;
 		return;
 	}
-	else if (what.empty()) {
+	if (what.empty()) {
 		std::cerr << "Error: Command tr must have a 'what' you want to replace with" << std::endl;
 		return;
 	}
-	else {
-		std::string input = getArgumentType();
-		if (input.empty()) return;
-		size_t counter = 0;
-		while ((counter = input.find(what, counter)) != std::string::npos) {
-			input.replace(counter, what.length(), with);
-			counter += with.length();
-		}
-		RedirectInput(input);
-		RedirectOutput(input);
+	
+	std::string input = getArgumentType();
+
+	if (input.empty()) return;
+
+	size_t counter = 0;
+	while ((counter = input.find(what, counter)) != std::string::npos) {
+		input.replace(counter, what.length(), with);
+		counter += with.length();
 	}
+
+	RedirectOutput(input);
 }
 
 void Tr::parseArguments(std::string arg) {
-	std::string argument, what, with;
+	std::string argument, what, with, rdInput, rdOutput, rdAppend;
 	int i = 0;
 	if (arg.empty()) {
 		return;
@@ -286,11 +288,11 @@ void Tr::parseArguments(std::string arg) {
 		else {
 			this->argument = "";
 			return;
-		}	
+		}
 	}
-	else if (i < arg.length()) {
+	else if (i < arg.length() && arg[i] != '<' && arg[i] != '>') {
 		while (i < arg.length()) {
-			if (arg[i] == '"') {
+			if (std::isspace(arg[i])) {
 				break;
 			}
 			argument += arg[i];
@@ -298,10 +300,7 @@ void Tr::parseArguments(std::string arg) {
 		}
 		this->argument = argument;
 	}
-	else {
-		return;
-	}
-	
+
 	while (i < arg.length() && (std::isspace(arg[i]) || arg[i] == '\t')) {
 		i++;
 	}
@@ -336,9 +335,7 @@ void Tr::parseArguments(std::string arg) {
 			i++;
 		}
 		this->with = with;
-	}	
-
-	// odraditi parsiranje AAAAAAAAAAAAAAA
+	}
 }
 
 void Head::execute() {

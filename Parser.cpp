@@ -77,13 +77,21 @@ std::string Parser::readArgument(std::string input, int& i) {
 		return "\"" + token + "\"";
 	}
 
+	bool insideQuotes = false;
 	while (i < input.length()) {
+		if (input[i] == '"') {
+			insideQuotes = !insideQuotes;
+		}
+		else if ((input[i] == '<' || input[i] == '>') && !insideQuotes) {
+			break;
+		}
 		token += input[i];
 		i++;
 	}
 
 	return token;
 }
+
 
 Redirection Parser::readStreamFile(std::string input, int& i) {
 	Redirection redirection = { Redirection::StreamType::None, "" };
