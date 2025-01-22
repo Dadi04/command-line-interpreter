@@ -15,6 +15,7 @@ public:
 	};
 
 	ParsedCommand parseCommand(std::string input);
+	std::vector<ParsedCommand> parsePipeline(std::string input);
 private:
 	void skipWhiteSpace(std::string input, int& i);
 	std::string readToken(std::string input, int& i);

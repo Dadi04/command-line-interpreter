@@ -4,24 +4,32 @@
 #include "Redirection.h"
 #include <string>
 #include <vector>
+#include <sstream>
+#include <functional>
 
 class Command {
 public:
 	virtual ~Command() {}
 
-	Command(std::string commandName, std::string opt, std::string arg, std::vector<Redirection> streams) : name(commandName), option(opt), argument(arg), streams(streams) {}
+	Command(std::string commandName, std::string opt, std::string arg, std::vector<Redirection> streams) : name(commandName), option(opt), argument(arg), streams(streams), buffer(nullptr) {}
 
 	virtual void execute() = 0;
+	virtual void print() = 0;
+	void RedirectInput(std::string& input);
+	void RedirectOutput(std::string input);
+	/*void pipelineRedirectOutput();*/
+	void setBuffer(std::stringstream* buffer);
 protected:
 	std::string getArgumentType();
 	std::string ifArgumentEmpty();
-	void RedirectInput(std::string& input);
-	void RedirectOutput(std::string input);
+	std::string ifBufferNotEmpty();
 
 	std::string name;
 	std::string option;
 	std::string argument;
 	std::vector<Redirection> streams;
+
+	std::stringstream* buffer;
 };
 
 class Echo : public Command {
@@ -29,6 +37,7 @@ public:
 	Echo(std::string arg, std::vector<Redirection> streams) : Command("echo", "", arg, streams) {};
 
 	void execute();
+	void print();
 };
 
 class Prompt : public Command {
@@ -81,6 +90,7 @@ public:
 	Wc(std::string opt, std::string arg, std::vector<Redirection> streams) : Command("wc", opt, arg, streams) {}
 
 	void execute();
+	void print();
 };
 
 class Tr : public Command {
@@ -90,6 +100,7 @@ public:
 	}
 
 	void execute();
+	void print();
 private:
 	std::string what;
 	std::string with;
@@ -102,6 +113,7 @@ public:
 	Head(std::string opt, std::string arg, std::vector<Redirection> streams) : Command("head", opt, arg, streams) {}
 
 	void execute();
+	void print();
 };
 
 

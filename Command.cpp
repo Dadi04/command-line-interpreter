@@ -2,6 +2,7 @@
 #include "Parser.h"
 #include "CommandFactory.h"
 #include "Redirection.h"
+#include "Pipeline.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -47,6 +48,20 @@ std::string Command::ifArgumentEmpty() {
 	return argument;
 }
 
+std::string Command::ifBufferNotEmpty() {
+	if (buffer && !buffer->str().empty()) {
+		argument = buffer->str();
+		buffer->str("");
+		buffer->clear();
+	}
+
+	return argument;
+}
+
+void Command::setBuffer(std::stringstream* buffer) {
+	this->buffer = buffer;
+}
+
 void Command::RedirectInput(std::string& input) {
 	for (Redirection& stream : streams) {
 		if (stream.redirectInput(input)) {
@@ -56,16 +71,45 @@ void Command::RedirectInput(std::string& input) {
 }
 
 void Command::RedirectOutput(std::string input) {
+	bool redirected = false;
 	for (Redirection& stream : streams) {
 		if (stream.redirectOutput(input)) {
+			redirected = true;
 			return;
 		}
 	}
-	std::cout << input << std::endl;
+
+	if (!redirected) {
+		if (buffer && buffer->str().empty()) {
+			*buffer << "\"" + input + "\"";
+		}
+		else {
+			std::cout << input << std::endl;
+		}
+	}
 }
+
+//void Command::pipelineRedirectOutput() {
+//	for (Redirection& stream : streams) {
+//		if (stream.type != Redirection::Output && stream.type != Redirection::Append) {
+//			std::string output = buffer->str();
+//			if (!output.empty()) {
+//				if (output.front() == '"' && output.back() == '"') {
+//					output = output.substr(1, output.size() - 2);
+//				}
+//				buffer->str("");
+//				buffer->clear();
+//				std::cout << output << std::endl;
+//				return;
+//			}
+//		}
+//	}
+//}
 
 void Echo::execute() {
 	std::string input;
+
+	ifBufferNotEmpty();
 	if (argument.empty()) {
 		input = ifArgumentEmpty();
 	}
@@ -84,6 +128,7 @@ void Echo::execute() {
 }
 
 void Prompt::execute() {
+	ifBufferNotEmpty();
 	this->promptSign = argument + " ";
 }
 
@@ -119,6 +164,8 @@ void Date::execute() {
 }
 
 void Touch::execute() {
+	ifBufferNotEmpty();
+
 	std::ifstream file(argument);
 	if (file) {
 		std::cerr << "Error: File \"" << argument << "\" already exists." << std::endl;
@@ -136,6 +183,8 @@ void Touch::execute() {
 }
 
 void Truncate::execute() {
+	ifBufferNotEmpty();
+
 	std::ifstream file(argument);
 	if (!file) {
 		std::cerr << "Error: File \"" << argument << "\" does not exist." << std::endl;
@@ -154,6 +203,8 @@ void Truncate::execute() {
 }
 
 void Rm::execute() {
+	ifBufferNotEmpty();
+
 	std::ifstream file(argument);
 	if (!file) {
 		std::cerr << "Error: File \"" << argument << "\" does not exist." << std::endl;
@@ -173,6 +224,8 @@ void Rm::execute() {
 
 void Wc::execute() {
 	std::string input;
+
+	ifBufferNotEmpty();
 	if (argument.empty()) {
 		input = ifArgumentEmpty();
 	}
@@ -213,6 +266,8 @@ void Wc::execute() {
 
 // nema ulaznu redirekciju tj ne prihvata znak <, ukoliko dodje znak < program zabode
 void Tr::execute() {
+	ifBufferNotEmpty();
+
 	if (argument.empty()) {
 		std::cerr << "Error: Command tr must have an argument" << std::endl;
 		return;
@@ -236,7 +291,7 @@ void Tr::execute() {
 }
 
 void Tr::parseArguments(std::string arg) {
-	std::string argument, what, with, rdInput, rdOutput, rdAppend;
+	std::string argument, what, with;
 	int i = 0;
 	if (arg.empty()) {
 		return;
@@ -310,6 +365,8 @@ void Tr::parseArguments(std::string arg) {
 
 void Head::execute() {
 	std::string input;
+
+	ifBufferNotEmpty();
 	if (argument.empty()) {
 		input = ifArgumentEmpty();
 	}
@@ -350,6 +407,8 @@ void Head::execute() {
 
 void Batch::execute() {
 	std::string input;
+
+	ifBufferNotEmpty();
 	if (argument.empty()) {
 		input = ifArgumentEmpty();
 	}

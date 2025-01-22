@@ -38,6 +38,29 @@ Parser::ParsedCommand Parser::parseCommand(std::string input) {
 	return parsedCommand;
 }
 
+std::vector<Parser::ParsedCommand> Parser::parsePipeline(std::string input) {
+	std::vector<ParsedCommand> parsedCommands;
+	int pos = 0;
+	bool insideQuotes = false;
+
+	for (int i = 0; i < input.length(); i++) {
+		if (input[i] == '"') {
+			insideQuotes = !insideQuotes;
+		}
+		else if (input[i] == '|' && !insideQuotes) {
+			std::string segment = input.substr(pos, i - pos);
+			parsedCommands.push_back(parseCommand(segment));
+			pos = i + 1;
+		}
+	}
+
+	if (pos < input.length()) {
+		parsedCommands.push_back(parseCommand(input.substr(pos)));
+	}
+
+	return parsedCommands;
+}
+
 void Parser::skipWhiteSpace(std::string input, int& i) {
 	while (i < input.length() && (std::isspace(input[i]) || input[i] == '\t')) {
 		i++;

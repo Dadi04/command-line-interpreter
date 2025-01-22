@@ -131,6 +131,7 @@
     <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="Pipeline.h" />
     <ClInclude Include="Redirection.h" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Interpreter.cpp" />
+    <ClCompile Include="Pipeline.cpp" />
     <ClCompile Include="Redirection.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

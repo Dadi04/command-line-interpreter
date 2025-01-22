@@ -5,7 +5,7 @@
 #include <string>
 
 bool Redirection::redirectInput(std::string& input) {
-	if (type == Input) {
+	if (type == Input && !file.empty()) {
 		std::ifstream inputFile;
 		inputFile.open(file);
 		if (!inputFile.is_open()) {
@@ -23,7 +23,7 @@ bool Redirection::redirectInput(std::string& input) {
 }
 
 bool Redirection::redirectOutput(std::string output) {
-	if (type == Output || type == Append) {
+	if ((type == Output || type == Append) && !file.empty()) {
 		std::ofstream outputFile;
 		if (type == Output) {
 			outputFile.open(file, std::ios::trunc);

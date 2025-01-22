@@ -2,6 +2,7 @@
 #define REDIRECTION_H
 
 #include <string>
+#include <sstream>
 
 struct Redirection {
 	enum StreamType {
@@ -12,6 +13,7 @@ struct Redirection {
 	};
 	StreamType type;
 	std::string file;
+	std::shared_ptr<std::stringstream> memoryStream;
 
 	bool redirectInput(std::string& input);
 	bool redirectOutput(std::string output);
