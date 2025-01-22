@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <functional>
 
 class Command {
 public:
@@ -15,11 +14,10 @@ public:
 
 	virtual void execute() = 0;
 	virtual void print() = 0;
-	void RedirectInput(std::string& input);
-	void RedirectOutput(std::string input);
-	/*void pipelineRedirectOutput();*/
 	void setBuffer(std::stringstream* buffer);
 protected:
+	void RedirectInput(std::string& input);
+	void RedirectOutput(std::string input);
 	std::string getArgumentType();
 	std::string ifArgumentEmpty();
 	std::string ifBufferNotEmpty();
@@ -46,6 +44,7 @@ public:
 	static std::string getPromptSign();
 
 	void execute();
+	void print();
 private:
 	static std::string promptSign;
 };
@@ -55,6 +54,7 @@ public:
 	Time(std::vector<Redirection> streams) : Command("time", "", "", streams) {}
 
 	void execute();
+	void print();
 };
 
 class Date : public Command {
@@ -62,6 +62,7 @@ public:
 	Date(std::vector<Redirection> streams) : Command("date", "", "", streams) {}
 
 	void execute();
+	void print();
 };
 
 class Touch	: public Command {
@@ -69,6 +70,7 @@ public:
 	Touch(std::string arg, std::vector<Redirection> streams) : Command("touch", "", arg, streams) {}
 
 	void execute();
+	void print();
 };
 
 class Truncate : public Command {
@@ -76,6 +78,7 @@ public:
 	Truncate(std::string arg, std::vector<Redirection> streams) : Command("truncate", "", arg, streams) {}
 
 	void execute();
+	void print();
 };
 
 class Rm : public Command {
@@ -83,6 +86,7 @@ public:
 	Rm(std::string arg, std::vector<Redirection> streams) : Command("rm", "", arg, streams) {}
 
 	void execute();
+	void print();
 };
 
 class Wc : public Command {
@@ -122,6 +126,7 @@ public:
 	Batch(std::string arg, std::vector<Redirection> streams) : Command("batch", "", arg, streams) {}
 
 	void execute();
+	void print();
 };
 
 #endif

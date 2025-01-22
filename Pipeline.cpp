@@ -28,3 +28,4 @@ void Pipeline::execute() {
 }
 
 // parseArgument za komandu tr napravi sranje kada nema argumenta tj kada je argument prazan, kada se koristi u pipeline
+// istestirati sve edge cases za pipeline

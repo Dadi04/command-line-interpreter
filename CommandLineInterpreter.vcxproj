@@ -135,13 +135,24 @@
     <ClInclude Include="Redirection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Batch.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandFactory.cpp" />
+    <ClCompile Include="Date.cpp" />
+    <ClCompile Include="Echo.cpp" />
+    <ClCompile Include="Head.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Pipeline.cpp" />
+    <ClCompile Include="Prompt.cpp" />
     <ClCompile Include="Redirection.cpp" />
+    <ClCompile Include="Rm.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Touch.cpp" />
+    <ClCompile Include="Tr.cpp" />
+    <ClCompile Include="Truncate.cpp" />
+    <ClCompile Include="Wc.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
