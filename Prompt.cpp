@@ -3,11 +3,12 @@
 
 void Prompt::execute() {
 	ifBufferNotEmpty();
+	if (!argument.empty()) {
+		if (argument.front() == '"' && argument.back() == '"') {
+			argument = argument.substr(1, argument.size() - 2);
+		}
+	}
 	this->promptSign = argument + " ";
-}
-
-void Prompt::print() {
-
 }
 
 std::string Prompt::promptSign = "$ ";

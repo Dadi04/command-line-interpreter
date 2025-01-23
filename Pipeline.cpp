@@ -25,7 +25,13 @@ void Pipeline::execute() {
             commands[i + 1]->setBuffer(&buffer);
         }
     }
-}
 
-// parseArgument za komandu tr napravi sranje kada nema argumenta tj kada je argument prazan, kada se koristi u pipeline
-// istestirati sve edge cases za pipeline
+    std::vector<Redirection> streams = commands.back()->getStreams();
+    if (!commands.empty() && streams.empty()) {
+        std::string output = commands.back()->getBuffer();
+        if (!output.empty() && output.front() == '"' && output.back() == '"') {
+            output = output.substr(1, output.size() - 2);
+            std::cout << output << std::endl;
+        }
+    }
+}

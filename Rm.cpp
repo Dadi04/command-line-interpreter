@@ -21,7 +21,3 @@ void Rm::execute() {
 		}
 	}
 }
-
-void Rm::print() {
-
-}

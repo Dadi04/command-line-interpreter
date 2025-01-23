@@ -3,6 +3,7 @@
 #include "CommandFactory.h"
 #include <iostream>
 
+// ne moze da ucitava pipeline trenutno
 void Batch::execute() {
 	std::string input;
 
@@ -63,8 +64,4 @@ void Batch::execute() {
 	}
 
 	delete[] commandsArray;
-}
-
-void Batch::print() {
-
 }

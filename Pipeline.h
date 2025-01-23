@@ -13,7 +13,6 @@ public:
 	void execute();
 private:
 	std::vector<Command*> commands;
-	std::stringstream outputBuffer;
 };
 
 #endif

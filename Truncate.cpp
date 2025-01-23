@@ -21,7 +21,3 @@ void Truncate::execute() {
 		}
 	}
 }
-
-void Truncate::print() {
-
-}

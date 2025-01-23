@@ -1,4 +1,5 @@
 #include "Command.h"
+#include <iostream>
 #include <ctime>
 
 void Date::execute() {
@@ -10,10 +11,19 @@ void Date::execute() {
 		char dateString[11];
 		strftime(dateString, sizeof(dateString), "%d.%m.%Y", &currentDate);
 
-		RedirectOutput(dateString);
+		print(dateString);
 	}
 }
 
-void Date::print() {
-
+void Date::print(std::string output) {
+	if (!RedirectOutput(output)) {
+		if (buffer) {
+			buffer->str("");
+			buffer->clear();
+			*buffer << "\"" + output + "\"";
+		}
+		else {
+			std::cout << output << std::endl;
+		}
+	}
 }

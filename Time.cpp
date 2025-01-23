@@ -1,4 +1,5 @@
 #include "Command.h"
+#include <iostream>
 #include <ctime>
 
 void Time::execute() {
@@ -10,10 +11,19 @@ void Time::execute() {
 		char timeString[9];
 		strftime(timeString, sizeof(timeString), "%H:%M:%S", &currentTime);
 
-		RedirectOutput(timeString);
+		print(timeString);
 	}
 }
 
-void Time::print() {
-
+void Time::print(std::string output) {
+	if (!RedirectOutput(output)) {
+		if (buffer) {
+			buffer->str("");
+			buffer->clear();
+			*buffer << "\"" + output + "\"";
+		}
+		else {
+			std::cout << output << std::endl;
+		}
+	}
 }

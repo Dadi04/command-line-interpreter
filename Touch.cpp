@@ -20,7 +20,3 @@ void Touch::execute() {
 		}
 	}
 }
-
-void Touch::print() {
-
-}

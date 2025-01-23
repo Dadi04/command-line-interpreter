@@ -45,8 +45,6 @@ std::string Command::ifArgumentEmpty() {
 std::string Command::ifBufferNotEmpty() {
 	if (buffer && !buffer->str().empty()) {
 		argument = buffer->str();
-		buffer->str("");
-		buffer->clear();
 	}
 
 	return argument;
@@ -54,6 +52,14 @@ std::string Command::ifBufferNotEmpty() {
 
 void Command::setBuffer(std::stringstream* buffer) {
 	this->buffer = buffer;
+}
+
+std::string Command::getBuffer() {
+	return this->buffer->str();
+}
+
+std::vector<Redirection> Command::getStreams() {
+	return this->streams;
 }
 
 void Command::RedirectInput(std::string& input) {
@@ -64,38 +70,12 @@ void Command::RedirectInput(std::string& input) {
 	}
 }
 
-void Command::RedirectOutput(std::string input) {
-	bool redirected = false;
+bool Command::RedirectOutput(std::string input) {
 	for (Redirection& stream : streams) {
 		if (stream.redirectOutput(input)) {
-			redirected = true;
-			return;
+			return true;
 		}
 	}
 
-	if (!redirected) {
-		if (buffer && buffer->str().empty()) {
-			*buffer << "\"" + input + "\"";
-		}
-		else {
-			std::cout << input << std::endl;
-		}
-	}
+	return false;
 }
-
-//void Command::pipelineRedirectOutput() {
-//	for (Redirection& stream : streams) {
-//		if (stream.type != Redirection::Output && stream.type != Redirection::Append) {
-//			std::string output = buffer->str();
-//			if (!output.empty()) {
-//				if (output.front() == '"' && output.back() == '"') {
-//					output = output.substr(1, output.size() - 2);
-//				}
-//				buffer->str("");
-//				buffer->clear();
-//				std::cout << output << std::endl;
-//				return;
-//			}
-//		}
-//	}
-//}

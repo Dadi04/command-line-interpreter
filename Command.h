@@ -13,11 +13,13 @@ public:
 	Command(std::string commandName, std::string opt, std::string arg, std::vector<Redirection> streams) : name(commandName), option(opt), argument(arg), streams(streams), buffer(nullptr) {}
 
 	virtual void execute() = 0;
-	virtual void print() = 0;
+	virtual void print(std::string output) = 0;
 	void setBuffer(std::stringstream* buffer);
+	std::string getBuffer();
+	std::vector<Redirection> getStreams();
 protected:
 	void RedirectInput(std::string& input);
-	void RedirectOutput(std::string input);
+	bool RedirectOutput(std::string input);
 	std::string getArgumentType();
 	std::string ifArgumentEmpty();
 	std::string ifBufferNotEmpty();
@@ -35,7 +37,7 @@ public:
 	Echo(std::string arg, std::vector<Redirection> streams) : Command("echo", "", arg, streams) {};
 
 	void execute();
-	void print();
+	void print(std::string output);
 };
 
 class Prompt : public Command {
@@ -44,7 +46,7 @@ public:
 	static std::string getPromptSign();
 
 	void execute();
-	void print();
+	void print(std::string output) {};
 private:
 	static std::string promptSign;
 };
@@ -54,7 +56,7 @@ public:
 	Time(std::vector<Redirection> streams) : Command("time", "", "", streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output);
 };
 
 class Date : public Command {
@@ -62,15 +64,15 @@ public:
 	Date(std::vector<Redirection> streams) : Command("date", "", "", streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output);
 };
 
-class Touch	: public Command {
+class Touch : public Command {
 public:
 	Touch(std::string arg, std::vector<Redirection> streams) : Command("touch", "", arg, streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output) {};
 };
 
 class Truncate : public Command {
@@ -78,7 +80,7 @@ public:
 	Truncate(std::string arg, std::vector<Redirection> streams) : Command("truncate", "", arg, streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output) {};
 };
 
 class Rm : public Command {
@@ -86,7 +88,7 @@ public:
 	Rm(std::string arg, std::vector<Redirection> streams) : Command("rm", "", arg, streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output) {};
 };
 
 class Wc : public Command {
@@ -94,7 +96,7 @@ public:
 	Wc(std::string opt, std::string arg, std::vector<Redirection> streams) : Command("wc", opt, arg, streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output);
 };
 
 class Tr : public Command {
@@ -104,11 +106,12 @@ public:
 	}
 
 	void execute();
-	void print();
+	void print(std::string output);
 private:
 	std::string what;
 	std::string with;
 
+	void checkBuffer();
 	void parseArguments(std::string arg);
 };
 
@@ -117,7 +120,7 @@ public:
 	Head(std::string opt, std::string arg, std::vector<Redirection> streams) : Command("head", opt, arg, streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output);
 };
 
 
@@ -126,7 +129,7 @@ public:
 	Batch(std::string arg, std::vector<Redirection> streams) : Command("batch", "", arg, streams) {}
 
 	void execute();
-	void print();
+	void print(std::string output) {};
 };
 
 #endif
