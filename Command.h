@@ -14,11 +14,12 @@ public:
 
 	virtual void execute() = 0;
 	virtual void print(std::string output) = 0;
+
 	void setBuffer(std::stringstream* buffer);
 	std::string getBuffer();
 	std::vector<Redirection> getStreams();
 protected:
-	void RedirectInput(std::string& input);
+	bool RedirectInput(std::string& input);
 	bool RedirectOutput(std::string input);
 	std::string getArgumentType();
 	std::string ifArgumentEmpty();

@@ -62,12 +62,13 @@ std::vector<Redirection> Command::getStreams() {
 	return this->streams;
 }
 
-void Command::RedirectInput(std::string& input) {
+bool Command::RedirectInput(std::string& input) {
 	for (Redirection& stream : streams) {
 		if (stream.redirectInput(input)) {
-			return;
+			return true;
 		}
 	}
+	return false;
 }
 
 bool Command::RedirectOutput(std::string input) {
@@ -76,6 +77,5 @@ bool Command::RedirectOutput(std::string input) {
 			return true;
 		}
 	}
-
 	return false;
 }
