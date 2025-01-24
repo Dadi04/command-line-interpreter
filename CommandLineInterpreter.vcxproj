@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandFactory.h" />
+    <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Pipeline.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="CommandFactory.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Echo.cpp" />
+    <ClCompile Include="ErrorHandling.cpp" />
     <ClCompile Include="Head.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />

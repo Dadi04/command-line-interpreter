@@ -3,6 +3,7 @@
 #include "Command.h"
 #include "CommandFactory.h"
 #include "Pipeline.h"
+#include "ErrorHandling.h"
 #include <string>
 #include <iostream>
 
@@ -11,6 +12,7 @@ const int MAX_INPUT_LENGTH = 512;
 void Interpreter::run() {
 	Parser commandParser;
 	CommandFactory commandFactory;
+	ErrorHandling errorHandling;
 	char input[MAX_INPUT_LENGTH];
 
 	while (true) {
@@ -40,6 +42,9 @@ void Interpreter::run() {
 
 		if (hasPipe) {
 			std::vector<Parser::ParsedCommand> parsedCommands = commandParser.parsePipeline(input);
+			if (errorHandling.catchPipeLexicalError(input, parsedCommands)) {
+				continue;
+			}
 			std::vector<Command*> commands;
 
 			for (auto parsedCommand : parsedCommands) {
@@ -56,6 +61,10 @@ void Interpreter::run() {
 		}
 		else {
 			Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
+			if (errorHandling.catchLexicalError(input, parsedCommand)) {
+				continue;
+			}
+
 			Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 
 			if (!command) {
