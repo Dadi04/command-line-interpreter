@@ -41,6 +41,14 @@ void Tr::print(std::string output) {
 	}
 }
 
+std::string Tr::getWhat() {
+	return this->what;
+}
+
+std::string Tr::getWith() {
+	return this->with;
+}
+
 void Tr::parseArguments(std::string arg) {
 	std::string argument, what, with;
 	int i = 0;

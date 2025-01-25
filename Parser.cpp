@@ -115,7 +115,6 @@ std::string Parser::readArgument(std::string input, int& i) {
 	return token;
 }
 
-
 Redirection Parser::readStreamFile(std::string input, int& i) {
 	Redirection redirection = { Redirection::StreamType::None, "" };
 
@@ -141,7 +140,20 @@ Redirection Parser::readStreamFile(std::string input, int& i) {
 	}
 
 	skipWhiteSpace(input, i);
-	redirection.file = readToken(input, i);
+	redirection.file = readStreamFileName(input, i);
 
 	return redirection;
 }
+
+std::string Parser::readStreamFileName(std::string input, int& i) {
+	std::string token;
+	while (i < input.length() && input[i] != '<' && input[i] != '>') {
+		token += input[i];
+		i++;
+	}
+	if (!token.empty() && token.back() == ' ') {
+		token.pop_back();
+	}
+	return token;
+}
+

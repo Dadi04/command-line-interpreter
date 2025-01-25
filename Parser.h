@@ -21,6 +21,7 @@ private:
 	std::string readToken(std::string input, int& i);
 	std::string readArgument(std::string input, int& i);
 	Redirection readStreamFile(std::string input, int& i);
+	std::string readStreamFileName(std::string input, int& i);
 };
 
 #endif
