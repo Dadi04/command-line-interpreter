@@ -2,6 +2,59 @@
 #include "Command.h"
 #include <iostream>
 
+bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
+    auto it = validators.find(parsedCommand.commandName);
+    if (it == validators.end()) {
+        std::cerr << "Unknown command: " << parsedCommand.commandName << "\n";
+        return false;
+    }
+    return it->second(parsedCommand);
+}
+
+bool ErrorHandling::validateEcho(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validatePrompt(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateTime(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateDate(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateTouch(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateTruncate(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateRm(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateWc(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateTr(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateHead(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
+bool ErrorHandling::validateBatch(Parser::ParsedCommand parsedCommand) {
+    return false;
+}
+
 bool ErrorHandling::catchLexicalError(std::string commandLine, Parser::ParsedCommand command) {
     int lineLength = commandLine.length();
     char* mistakes = new char[lineLength + 1];
@@ -9,7 +62,7 @@ bool ErrorHandling::catchLexicalError(std::string commandLine, Parser::ParsedCom
         mistakes[i] = ' ';
     }
 
-    int index = 0, nameSize = command.commandName.length(), optSize = command.commandOpt.length(), argSize = command.commandArg.length();
+    int index = 0;
     bool hasErrors = false;
 
     skipWhiteSpace(commandLine, index);
@@ -46,10 +99,47 @@ bool ErrorHandling::catchLexicalError(std::string commandLine, Parser::ParsedCom
 }
 
 bool ErrorHandling::catchPipeLexicalError(std::string commandLine, std::vector<Parser::ParsedCommand> commands) {
-    for (int i = 0; i < commands.size(); i++) {
-        std::cout << "Name: " << commands[i].commandName << ", Option: " << commands[i].commandOpt << ", Argument: " << commands[i].commandArg << std::endl;
+    int lineLength = commandLine.length();
+    char* mistakes = new char[lineLength + 1];
+    for (int i = 0; i < lineLength; i++) {
+        mistakes[i] = ' ';
     }
-    return false;
+
+    int index = 0;
+    bool hasErrors = false;
+    for (int i = 0; i < commands.size(); i++) {
+        std::string partOfCommandLine;
+        bool insideQuotes = false;
+        for (int j = index; j < commandLine.length(); j++) {
+            if (commandLine[j] == '"') {
+                insideQuotes = !insideQuotes;
+            }
+            if (commandLine[j] == '|' && !insideQuotes) {
+                index++;
+                break;
+            }
+            partOfCommandLine += commandLine[j];
+            index++;
+        }
+
+        // napraviti poseban lexical za pipe
+        hasErrors |= catchLexicalError(partOfCommandLine, commands[i]);
+    }
+
+    /*for (int i = index; i < lineLength; i++) {
+        mistakes[i] = '^';
+        hasErrors = true;
+    }
+
+    if (hasErrors) {
+        std::cerr << "Error - unexpected characters:" << std::endl << commandLine << std::endl;
+        for (int i = 0; i < lineLength; i++) {
+            std::cerr << mistakes[i];
+        }
+        std::cerr << std::endl;
+    }*/
+
+    return hasErrors;
 }
 
 void ErrorHandling::skipWhiteSpace(std::string commandLine, int& index) {

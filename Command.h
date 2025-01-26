@@ -14,7 +14,6 @@ public:
 
 	virtual void execute() = 0;
 	virtual void print(std::string output) = 0;
-	//virtual bool catchErrors() = 0;
 
 	void setBuffer(std::stringstream* buffer);
 	std::string getBuffer();

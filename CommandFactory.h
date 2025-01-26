@@ -9,12 +9,7 @@ class Command;
 
 class CommandFactory {
 public:
-	Command* createCommand(
-		std::string name, 
-		std::string opt, 
-		std::string arg, 
-		std::vector<Redirection> streams
-	);
+	Command* createCommand(std::string name, std::string opt, std::string arg, std::vector<Redirection> streams);
 };
 
 #endif
