@@ -128,8 +128,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
-    <ClInclude Include="CommandFactory.h" />
     <ClInclude Include="ErrorHandling.h" />
+    <ClInclude Include="Factory.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Pipeline.h" />
@@ -138,10 +138,10 @@
   <ItemGroup>
     <ClCompile Include="Batch.cpp" />
     <ClCompile Include="Command.cpp" />
-    <ClCompile Include="CommandFactory.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Echo.cpp" />
     <ClCompile Include="ErrorHandling.cpp" />
+    <ClCompile Include="Factory.cpp" />
     <ClCompile Include="Head.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />

@@ -12,18 +12,18 @@ class ErrorHandling {
 public:
 	~ErrorHandling() {};
 	ErrorHandling() {
-		validators["echo"] = [this](Parser::ParsedCommand parsedCommand) { return validateEcho(parsedCommand); };
-		validators["prompt"] = [this](Parser::ParsedCommand parsedCommand) { return validatePrompt(parsedCommand); };
-		validators["time"] = [this](Parser::ParsedCommand parsedCommand) { return validateTime(parsedCommand); };
-		validators["date"] = [this](Parser::ParsedCommand parsedCommand) { return validateDate(parsedCommand); };
-		validators["touch"] = [this](Parser::ParsedCommand parsedCommand) { return validateTouch(parsedCommand); };
-		validators["truncate"] = [this](Parser::ParsedCommand parsedCommand) { return validateTruncate(parsedCommand); };
-		validators["rm"] = [this](Parser::ParsedCommand parsedCommand) { return validateRm(parsedCommand); };
-		validators["wc"] = [this](Parser::ParsedCommand parsedCommand) { return validateWc(parsedCommand); };
-		validators["tr"] = [this](Parser::ParsedCommand parsedCommand) { return validateTr(parsedCommand); };
-		validators["head"] = [this](Parser::ParsedCommand parsedCommand) { return validateHead(parsedCommand); };
-		validators["batch"] = [this](Parser::ParsedCommand parsedCommand) { return validateBatch(parsedCommand); };
-	}
+		validators["echo"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateEcho(parsedCommand); });
+		validators["prompt"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validatePrompt(parsedCommand); });
+		validators["time"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTime(parsedCommand); });
+		validators["date"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateDate(parsedCommand); });
+		validators["touch"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTouch(parsedCommand); });
+		validators["truncate"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTruncate(parsedCommand); });
+		validators["rm"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateRm(parsedCommand); });
+		validators["wc"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateWc(parsedCommand); });
+		validators["tr"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTr(parsedCommand); });
+		validators["head"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateHead(parsedCommand); });
+		validators["batch"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateBatch(parsedCommand); });
+	};
 
 	bool validateCommand(Parser::ParsedCommand parsedCommand);
 
@@ -51,6 +51,5 @@ private:
 	bool validateHead(Parser::ParsedCommand parsedCommand);
 	bool validateBatch(Parser::ParsedCommand parsedCommand);
 };
-
 
 #endif

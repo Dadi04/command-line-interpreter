@@ -1,6 +1,6 @@
 #include "Command.h"
 #include "Parser.h"
-#include "CommandFactory.h"
+#include "Factory.h"
 #include <iostream>
 
 // ne moze da ucitava pipeline trenutno
@@ -49,10 +49,10 @@ void Batch::execute() {
 
 	for (int i = 0; i < commandCount; i++) {
 		Parser commandParser;
-		CommandFactory commandFactory;
+		Factory factory;
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(commandsArray[i]);
-		Command* command = commandFactory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
+		Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 
 		if (!command) {
 			std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;

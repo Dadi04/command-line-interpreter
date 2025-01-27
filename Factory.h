@@ -1,13 +1,12 @@
-#ifndef COMMANDFACTORY_H
-#define COMMANDFACTORY_H
+#ifndef FACTORY_H
+#define FACTORY_H
 
+#include "Command.h"
 #include "Redirection.h"
 #include <string>
 #include <vector>
 
-class Command;
-
-class CommandFactory {
+class Factory {
 public:
 	Command* createCommand(std::string name, std::string opt, std::string arg, std::vector<Redirection> streams);
 };

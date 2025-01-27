@@ -1,9 +1,9 @@
-#include "CommandFactory.h"
+#include "Factory.h"
 #include "Command.h"
 #include "Redirection.h"
 #include <vector>
 
-Command* CommandFactory::createCommand(std::string name, std::string opt, std::string arg, std::vector<Redirection> streams) {
+Command* Factory::createCommand(std::string name, std::string opt, std::string arg, std::vector<Redirection> streams) {
     if (name == "echo") {
         return new Echo(arg, streams);
     }

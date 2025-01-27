@@ -1,6 +1,7 @@
 #include "Parser.h"
 #include <iostream>
 
+// traziti argument samo unutar "", ukiliko se pojavi next nakon zatvorenog navodnika, zovi gresku !
 Parser::ParsedCommand Parser::parseCommand(std::string input) {
 	ParsedCommand parsedCommand;
 	int i = 0;
@@ -78,40 +79,25 @@ std::string Parser::readToken(std::string input, int& i) {
 
 std::string Parser::readArgument(std::string input, int& i) {
 	std::string token;
-
-	if (i < input.length() && input[i] == '"') {
-		i++;
-
-		while (i < input.length()) {
-			if (input[i] == '"') {
-				size_t nextQuote = input.find('"', i + 1);
-				if (nextQuote == std::string::npos) {
-					break;
-				}
-			}
-			token += input[i];
-			i++;
-		}
-
-		if (i < input.length() && input[i] == '"') {
-			i++;
-		}
-
-		return "\"" + token + "\"";
-	}
-
 	bool insideQuotes = false;
+
 	while (i < input.length()) {
-		if (input[i] == '"') {
-			insideQuotes = !insideQuotes;
-		}
-		else if ((input[i] == '<' || input[i] == '>') && !insideQuotes) {
+		char c = input[i];
+
+		if ((c == '<' || c == '>') && !insideQuotes) {
 			break;
 		}
-		token += input[i];
+
+		if (c == '"') {
+			insideQuotes = !insideQuotes;
+			token += c;
+		}
+		else {
+			token += c;
+		}
+
 		i++;
 	}
-
 	return token;
 }
 
