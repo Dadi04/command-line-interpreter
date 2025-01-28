@@ -48,9 +48,9 @@ void Interpreter::run() {
 			std::vector<Command*> commands;
 
 			for (auto parsedCommand : parsedCommands) {
-				if (!errorHandling->validateCommand(parsedCommand)) {
+				/*if (!errorHandling->validateCommand(parsedCommand)) {
 					continue;
-				}
+				}*/
 				Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 				if (!command) {
 					std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;

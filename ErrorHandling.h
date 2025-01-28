@@ -12,23 +12,25 @@ class ErrorHandling {
 public:
 	~ErrorHandling() {};
 	ErrorHandling() {
-		validators["echo"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateEcho(parsedCommand); });
-		validators["prompt"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validatePrompt(parsedCommand); });
-		validators["time"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTime(parsedCommand); });
-		validators["date"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateDate(parsedCommand); });
-		validators["touch"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTouch(parsedCommand); });
-		validators["truncate"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTruncate(parsedCommand); });
-		validators["rm"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateRm(parsedCommand); });
-		validators["wc"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateWc(parsedCommand); });
-		validators["tr"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateTr(parsedCommand); });
-		validators["head"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateHead(parsedCommand); });
-		validators["batch"] = std::function<bool(Parser::ParsedCommand)>([this](Parser::ParsedCommand parsedCommand) { return validateBatch(parsedCommand); });
+		validators = {
+			{"echo", [this](Parser::ParsedCommand parsedCommand) { return validateEcho(parsedCommand); }},
+			{"prompt", [this](Parser::ParsedCommand parsedCommand) { return validatePrompt(parsedCommand); }},
+			{"time", [this](Parser::ParsedCommand parsedCommand) { return validateTime(parsedCommand); }},
+			{"date", [this](Parser::ParsedCommand parsedCommand) { return validateDate(parsedCommand); }},
+			{"touch", [this](Parser::ParsedCommand parsedCommand) { return validateTouch(parsedCommand); }},
+			{"truncate", [this](Parser::ParsedCommand parsedCommand) { return validateTruncate(parsedCommand); }},
+			{"rm", [this](Parser::ParsedCommand parsedCommand) { return validateRm(parsedCommand); }},
+			{"wc", [this](Parser::ParsedCommand parsedCommand) { return validateWc(parsedCommand); }},
+			{"tr", [this](Parser::ParsedCommand parsedCommand) { return validateTr(parsedCommand); }},
+			{"head", [this](Parser::ParsedCommand parsedCommand) { return validateHead(parsedCommand); }},
+			{"batch", [this](Parser::ParsedCommand parsedCommand) { return validateBatch(parsedCommand); }}
+		};
 	};
 
 	bool validateCommand(Parser::ParsedCommand parsedCommand);
 
-	bool catchLexicalError(std::string commandLine, Parser::ParsedCommand);
-	bool catchPipeLexicalError(std::string commandLine, std::vector<Parser::ParsedCommand>);
+	bool catchLexicalError(std::string commandLine, Parser::ParsedCommand command);
+	bool catchPipeLexicalError(std::string commandLine, std::vector<Parser::ParsedCommand> commands);
 
 private:
 	std::unordered_map<std::string, std::function<bool(Parser::ParsedCommand)>> validators;
@@ -38,6 +40,9 @@ private:
 	bool validateCommandOption(std::string commandLine, std::string option, char* mistakes, int& index);
 	bool validateCommandArgument(std::string commandLine, std::string argument, char* mistakes, int& index);
 	bool validateStreams(std::string commandLine, std::vector<Redirection> streams, char* mistakes, int& index);
+
+	bool validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index);
+	bool validateCommandArgumentBatch(std::string commandLine, std::string argument, char* mistakes, int& index);
 
 	bool validateEcho(Parser::ParsedCommand parsedCommand);
 	bool validatePrompt(Parser::ParsedCommand parsedCommand);

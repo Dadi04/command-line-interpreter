@@ -1,6 +1,7 @@
 #include "Command.h"
 #include "Parser.h"
 #include "Factory.h"
+#include "ErrorHandling.h"
 #include <iostream>
 
 // ne moze da ucitava pipeline trenutno
@@ -52,6 +53,10 @@ void Batch::execute() {
 		Factory factory;
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(commandsArray[i]);
+		ErrorHandling* errorHandling = new ErrorHandling;
+		if (errorHandling->catchLexicalError(commandsArray[i], parsedCommand) || !errorHandling->validateCommand(parsedCommand)) {
+			continue;
+		}
 		Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 
 		if (!command) {
@@ -61,6 +66,7 @@ void Batch::execute() {
 
 		command->execute();
 		delete command;
+		delete errorHandling;
 	}
 
 	delete[] commandsArray;
