@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 
+// to do
 // nema ulaznu redirekciju tj ne prihvata znak < ukoliko je on posle what i with, ako dodje na mestu de je argument onda je ok
 // ukoliko nema argument trebalo bi da otvori da se pise u vise redova kao kod komande echo ili head kad nemaju argument
 void Tr::execute() {

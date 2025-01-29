@@ -9,7 +9,7 @@ void Date::execute() {
 
 	if (localtime_s(&currentDate, &timestamp) == 0) {
 		char dateString[11];
-		strftime(dateString, sizeof(dateString), "%d.%m.%Y", &currentDate);
+		strftime(dateString, sizeof(dateString), "%d.%m.%Y.", &currentDate);
 
 		print(dateString);
 	}

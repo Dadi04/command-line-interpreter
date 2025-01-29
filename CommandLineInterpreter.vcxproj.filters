@@ -24,9 +24,6 @@
     <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Interpreter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Redirection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -41,9 +38,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

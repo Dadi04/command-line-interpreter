@@ -29,32 +29,32 @@ public:
 
 	bool validateCommand(Parser::ParsedCommand parsedCommand);
 
-	bool catchLexicalError(std::string commandLine, Parser::ParsedCommand command);
-	bool catchPipeLexicalError(std::string commandLine, std::vector<Parser::ParsedCommand> commands);
+	bool catchErrors(std::string commandLine, Parser::ParsedCommand command);
+	bool catchPipeErrors(std::string commandLine, std::vector<Parser::ParsedCommand> commands);
 
 private:
-	std::unordered_map<std::string, std::function<bool(Parser::ParsedCommand)>> validators;
+	std::unordered_map<std::string, std::function<void(Parser::ParsedCommand)>> validators;
 
 	void skipWhiteSpace(std::string commandLine, int& index);
-	bool validateCommandName(std::string commandLine, std::string name, char* mistakes, int& index);
-	bool validateCommandOption(std::string commandLine, std::string option, char* mistakes, int& index);
-	bool validateCommandArgument(std::string commandLine, std::string argument, char* mistakes, int& index);
-	bool validateStreams(std::string commandLine, std::vector<Redirection> streams, char* mistakes, int& index);
+	void validateCommandName(std::string commandLine, std::string name, char* mistakes, int& index);
+	void validateCommandOption(std::string commandLine, std::string option, char* mistakes, int& index);
+	void validateCommandArgument(std::string commandLine, std::string argument, char* mistakes, int& index);
+	void validateStreams(std::string commandLine, std::vector<Redirection> streams, char* mistakes, int& index);
 
-	bool validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index);
-	bool validateCommandArgumentBatch(std::string commandLine, std::string argument, char* mistakes, int& index);
+	void validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index);
+	void validateCommandArgumentBatch(std::string commandLine, std::string argument, char* mistakes, int& index);
 
-	bool validateEcho(Parser::ParsedCommand parsedCommand);
-	bool validatePrompt(Parser::ParsedCommand parsedCommand);
-	bool validateTime(Parser::ParsedCommand parsedCommand);
-	bool validateDate(Parser::ParsedCommand parsedCommand);
-	bool validateTouch(Parser::ParsedCommand parsedCommand);
-	bool validateTruncate(Parser::ParsedCommand parsedCommand);
-	bool validateRm(Parser::ParsedCommand parsedCommand);
-	bool validateWc(Parser::ParsedCommand parsedCommand);
-	bool validateTr(Parser::ParsedCommand parsedCommand);
-	bool validateHead(Parser::ParsedCommand parsedCommand);
-	bool validateBatch(Parser::ParsedCommand parsedCommand);
+	void validateEcho(Parser::ParsedCommand parsedCommand);
+	void validatePrompt(Parser::ParsedCommand parsedCommand);
+	void validateTime(Parser::ParsedCommand parsedCommand);
+	void validateDate(Parser::ParsedCommand parsedCommand);
+	void validateTouch(Parser::ParsedCommand parsedCommand);
+	void validateTruncate(Parser::ParsedCommand parsedCommand);
+	void validateRm(Parser::ParsedCommand parsedCommand);
+	void validateWc(Parser::ParsedCommand parsedCommand);
+	void validateTr(Parser::ParsedCommand parsedCommand);
+	void validateHead(Parser::ParsedCommand parsedCommand);
+	void validateBatch(Parser::ParsedCommand parsedCommand);
 };
 
 #endif

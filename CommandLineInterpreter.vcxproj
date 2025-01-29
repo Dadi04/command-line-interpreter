@@ -130,7 +130,6 @@
     <ClInclude Include="Command.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="Factory.h" />
-    <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Pipeline.h" />
     <ClInclude Include="Redirection.h" />
@@ -143,7 +142,6 @@
     <ClCompile Include="ErrorHandling.cpp" />
     <ClCompile Include="Factory.cpp" />
     <ClCompile Include="Head.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Pipeline.cpp" />

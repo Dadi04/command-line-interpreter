@@ -1,7 +1,6 @@
 #include "Parser.h"
 #include <iostream>
 
-// traziti argument samo unutar "", ukiliko se pojavi next nakon zatvorenog navodnika, zovi gresku !
 Parser::ParsedCommand Parser::parseCommand(std::string input) {
 	ParsedCommand parsedCommand;
 	int i = 0;

@@ -4,128 +4,105 @@
 #include <iostream>
 
 bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
-    auto it = validators.find(parsedCommand.commandName);
-    if (it == validators.end()) {
-        std::cerr << "Unknown command: " << parsedCommand.commandName << std::endl;
-        return false;
+    try {
+        auto it = validators.find(parsedCommand.commandName);
+        if (it == validators.end()) {
+            throw std::runtime_error("Unknown command: " + parsedCommand.commandName);
+        }
+        it->second(parsedCommand);
     }
-    return it->second(parsedCommand);
-}
-
-bool ErrorHandling::validateEcho(Parser::ParsedCommand parsedCommand) {
-    if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: echo [argument]" << std::endl;
+    catch (std::exception e) {
+        std::cerr << e.what() << std::endl;
         return false;
     }
     return true;
 }
 
-bool ErrorHandling::validatePrompt(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateEcho(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: prompt argument" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: echo [argument]");
+    }
+}
+
+void ErrorHandling::validatePrompt(Parser::ParsedCommand parsedCommand) {
+    if (!parsedCommand.commandOpt.empty()) {
+        throw std::runtime_error("The command does not take an option. Its format is: prompt argument");
     }
     else if (parsedCommand.commandArg.empty()) {
-        std::cerr << "The command takes an argument. Its format is: prompt argument" << std::endl;
-        return false;
+        throw std::runtime_error("The command takes an argument. Its format is: prompt argument");
     }
-    return true;
 }
 
-bool ErrorHandling::validateTime(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateTime(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: time" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: time");
     }
     else if (!parsedCommand.commandArg.empty()) {
-        std::cerr << "The command does not take an argument. Its format is: time" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an argument. Its format is: time");
     }
-    return true;
 }
 
-bool ErrorHandling::validateDate(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateDate(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: date" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: date");
     }
     else if (!parsedCommand.commandArg.empty()) {
-        std::cerr << "The command does not take an argument. Its format is: date" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an argument. Its format is: date");
     }
-    return true;
 }
 
-bool ErrorHandling::validateTouch(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateTouch(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: touch filename" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: touch filename");
     }
     else if (parsedCommand.commandArg.empty()) {
-        std::cerr << "The command takes an argument. Its format is: touch argument" << std::endl;
-        return false;
+        throw std::runtime_error("The command takes an argument. Its format is: touch argument");
     }
-    return true;
 }
 
-bool ErrorHandling::validateTruncate(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateTruncate(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: truncate filename" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: truncate filename");
     }
     else if (parsedCommand.commandArg.empty()) {
-        std::cerr << "The command takes an argument. Its format is: truncate argument" << std::endl;
-        return false;
+        throw std::runtime_error("The command takes an argument. Its format is: truncate argument");
     }
-    return true;
 }
 
-bool ErrorHandling::validateRm(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateRm(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: rm filename" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: rm filename");
     }
     else if (parsedCommand.commandArg.empty()) {
-        std::cerr << "The command takes an argument. Its format is: rm argument" << std::endl;
-        return false;
+        throw std::runtime_error("The command takes an argument. Its format is: rm argument");
     }
-    return true;
 }
 
-bool ErrorHandling::validateWc(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateWc(Parser::ParsedCommand parsedCommand) {
     if (parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command takes an option. Its format is: wc -opt [argument]" << std::endl;
-        return false;
+        throw std::runtime_error("The command takes an option. Its format is: wc -opt [argument]");
     }
-    return true;
 }
 
-bool ErrorHandling::validateTr(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateTr(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: tr [argument] what [with]" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: tr [argument] what [with]");
     }
-    return true;
 }
 
-bool ErrorHandling::validateHead(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateHead(Parser::ParsedCommand parsedCommand) {
     if (parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command takes an option. Its format is: head -ncount [argument]" << std::endl;
-        return false;
+        throw std::runtime_error("The command takes an option. Its format is: head -ncount [argument]");
     }
-    std::cout << parsedCommand.commandOpt << parsedCommand.commandArg << std::endl;
-    return true;
 }
 
-bool ErrorHandling::validateBatch(Parser::ParsedCommand parsedCommand) {
+void ErrorHandling::validateBatch(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        std::cerr << "The command does not take an option. Its format is: batch [argument]" << std::endl;
-        return false;
+        throw std::runtime_error("The command does not take an option. Its format is: batch [argument]");
     }
-    return true;
 }
 
-bool ErrorHandling::catchLexicalError(std::string commandLine, Parser::ParsedCommand command) {
+bool ErrorHandling::catchErrors(std::string commandLine, Parser::ParsedCommand command) {
     int lineLength = commandLine.length();
     char* mistakes = new char[lineLength + 1];
     for (int i = 0; i < lineLength; i++) {
@@ -133,47 +110,48 @@ bool ErrorHandling::catchLexicalError(std::string commandLine, Parser::ParsedCom
     }
 
     int index = 0;
-    bool hasErrors = false;
+    try {
+        skipWhiteSpace(commandLine, index);
 
-    skipWhiteSpace(commandLine, index);
+        validateCommandName(commandLine, command.commandName, mistakes, index);
 
-    hasErrors |= validateCommandName(commandLine, command.commandName, mistakes, index);
+        skipWhiteSpace(commandLine, index);
 
-    skipWhiteSpace(commandLine, index);
+        validateCommandOption(commandLine, command.commandOpt, mistakes, index);
 
-    hasErrors |= validateCommandOption(commandLine, command.commandOpt, mistakes, index);
+        skipWhiteSpace(commandLine, index);
 
-    skipWhiteSpace(commandLine, index);
+        if (command.commandName.find("tr") != std::string::npos) {
+            validateCommandArgumentTr(commandLine, command.commandArg, mistakes, index);
+        }
+        else if (command.commandName.find("batch") != std::string::npos) {
+            validateCommandArgumentBatch(commandLine, command.commandArg, mistakes, index);
+        }
+        else {
+            validateCommandArgument(commandLine, command.commandArg, mistakes, index);
+        }
 
-    if (command.commandName == "tr") {
-        hasErrors |= validateCommandArgumentTr(commandLine, command.commandArg, mistakes, index);
+        skipWhiteSpace(commandLine, index);
+
+        validateStreams(commandLine, command.streams, mistakes, index);
+
+        for (int i = index; i < lineLength; i++) {
+            mistakes[i] = '^';
+            throw std::runtime_error("Unexpected characters at the end of the command");
+        }
     }
-    else if (command.commandName == "batch") {
-        hasErrors |= validateCommandArgumentBatch(commandLine, command.commandArg, mistakes, index);
-    }
-    else {
-        hasErrors |= validateCommandArgument(commandLine, command.commandArg, mistakes, index);
-    }
-
-    skipWhiteSpace(commandLine, index);
-
-    hasErrors |= validateStreams(commandLine, command.streams, mistakes, index);
-
-    for (int i = index; i < lineLength; i++) {
-        mistakes[i] = '^';
-        hasErrors = true;
-    }
-
-    if (hasErrors) {
-        std::cerr << "Error - unexpected characters:" << std::endl << commandLine << std::endl;
+    catch (std::exception e) {
+        std::cerr << "Error - " << e.what() << ":" << std::endl << commandLine << std::endl;
         for (int i = 0; i < lineLength; i++) {
             std::cerr << mistakes[i];
         }
         std::cerr << std::endl;
+        delete[] mistakes;
+        return true;
     }
 
     delete[] mistakes;
-    return hasErrors;
+    return false;
 }
 
 void ErrorHandling::skipWhiteSpace(std::string commandLine, int& index) {
@@ -182,42 +160,37 @@ void ErrorHandling::skipWhiteSpace(std::string commandLine, int& index) {
     }
 }
 
-bool ErrorHandling::validateCommandName(std::string commandLine, std::string name, char* mistakes, int& index) {
-    bool hasErrors = false;
+void ErrorHandling::validateCommandName(std::string commandLine, std::string name, char* mistakes, int& index) {
     for (int i = 0; i < name.length(); i++) {
         if (index < commandLine.length() && !std::isalpha(name[i])) {
             mistakes[index] = '^';
-            hasErrors = true;
+            throw std::runtime_error("Invalid command name");
         }
         index++;
     }
-    return hasErrors;
 }
 
-bool ErrorHandling::validateCommandOption(std::string commandLine, std::string option, char* mistakes, int& index) {
-    bool hasErrors = false;
+void ErrorHandling::validateCommandOption(std::string commandLine, std::string option, char* mistakes, int& index) {
     if (!option.empty()) {
         if (index < commandLine.length() && commandLine[index] == '-') {
             index++;
             for (int i = 1; i < option.length(); i++) {
                 if (index < commandLine.length() && !std::isalpha(option[i]) && !std::isdigit(option[i])) {
                     mistakes[index] = '^';
-                    hasErrors = true;
+                    throw std::runtime_error("Invalid characters in command option");
                 }
                 index++;
             }
         }
         else if (index < commandLine.length()) {
             mistakes[index] = '^';
-            hasErrors = true;
+            throw std::runtime_error("Missing dash for command option");
             index++;
         }
     }
-    return hasErrors;
 }
 
-bool ErrorHandling::validateCommandArgument(std::string commandLine, std::string argument, char* mistakes, int& index) {
-    bool hasErrors = false;
+void ErrorHandling::validateCommandArgument(std::string commandLine, std::string argument, char* mistakes, int& index) {
     if (!argument.empty() && commandLine[index] != '<' && commandLine[index] != '>' && index < commandLine.length()) {
         int firstQuote = commandLine.find('"', index);
         int secondQuote = commandLine.find('"', firstQuote + 1);
@@ -227,7 +200,7 @@ bool ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                 for (int i = index; i < firstQuote; i++) {
                     if (!std::isspace(commandLine[i]) && commandLine[i] != '\t') {
                         mistakes[i] = '^';
-                        hasErrors = true;
+                        throw std::runtime_error("Unexpected characters before quoted argument");
                     }
                 }
                 for (int i = secondQuote + 1; i < commandLine.length(); i++) {
@@ -236,7 +209,7 @@ bool ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                     }
                     if (!std::isspace(commandLine[i]) && commandLine[i] != '\t') {
                         mistakes[i] = '^';
-                        hasErrors = true;
+                        throw std::runtime_error("Unexpected characters after quoted argument");
                     }
                 }
             }
@@ -246,26 +219,22 @@ bool ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                 for (int i = 0; i < argument.length(); i++) {
                     if (std::isspace(argument[i])) {
                         mistakes[index + i] = '^';
-                        hasErrors = true;
+                        throw std::runtime_error("Spaces are not allowed in the argument");
                     }
                 }
             }
         }
     }
     index += argument.length();
-    return hasErrors;
 }
 
-bool ErrorHandling::validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index) {
-    bool hasErrors = false;
-    
+void ErrorHandling::validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index) {
+
     // to do
 
-    return hasErrors;
 }
 
-bool ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::string argument, char* mistakes, int& index) {
-    bool hasErrors = false;
+void ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::string argument, char* mistakes, int& index) {
     int firstQuote = argument.find('"');
     int lastQuote = argument.rfind('"');
 
@@ -273,14 +242,14 @@ bool ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::s
         for (int i = 0; i < firstQuote; i++) {
             if (!std::isspace(argument[i]) && argument[i] != '\t') {
                 mistakes[index + i] = '^';
-                hasErrors = true;
+                throw std::runtime_error("Unexpected characters before quoted argument");
             }
         }
 
         for (int i = lastQuote + 1; i < argument.size(); i++) {
             if (!std::isspace(argument[i]) && argument[i] != '\t') {
                 mistakes[index + i] = '^';
-                hasErrors = true;
+                throw std::runtime_error("Unexpected characters after quoted argument");
             }
         }
     }
@@ -289,18 +258,16 @@ bool ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::s
             for (int i = 0; i < argument.size(); i++) {
                 if (argument[i] == ' ') {
                     mistakes[index + i] = '^';
+                    throw std::runtime_error("Spaces are not allowed in the filename");
                 }
             }
-            hasErrors = true;
         }
     }
 
     index += argument.size();
-    return hasErrors;
 }
 
-bool ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirection> streams, char* mistakes, int& index) {
-    bool hasErrors = false;
+void ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirection> streams, char* mistakes, int& index) {
     if (!streams.empty()) {
         std::string streamFile1, streamFile2;
         if (streams.size() == 1) {
@@ -336,7 +303,7 @@ bool ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirec
                     if (index + i >= commandLine.length()) break;
                     if (std::isspace(fileName[i])) {
                         mistakes[index + i] = '^';
-                        hasErrors = true;
+                        throw std::runtime_error("Spaces are not allowed in the filename");
                     }
                 }
                 index += fileName.length();
@@ -346,11 +313,10 @@ bool ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirec
             }
         }
     }
-    return hasErrors;
 }
 
-// needs fix
-bool ErrorHandling::catchPipeLexicalError(std::string commandLine, std::vector<Parser::ParsedCommand> commands) {
+// needs fix - to do
+bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser::ParsedCommand> commands) {
     int lineLength = commandLine.length();
     char* mistakes = new char[lineLength + 1];
     for (int i = 0; i < lineLength; i++) {
@@ -358,40 +324,37 @@ bool ErrorHandling::catchPipeLexicalError(std::string commandLine, std::vector<P
     }
 
     int index = 0;
-    bool hasErrors = false;
-    for (int i = 0; i < commands.size(); i++) {
-        std::string partOfCommandLine;
-        bool insideQuotes = false;
-        for (int j = index; j < commandLine.length(); j++) {
-            if (commandLine[j] == '"') {
-                insideQuotes = !insideQuotes;
-            }
-            if (commandLine[j] == '|' && !insideQuotes) {
-                index++;
-                break;
-            }
-            partOfCommandLine += commandLine[j];
+    try {
+        for (int i = 0; i < commands.size(); i++) {
+            skipWhiteSpace(commandLine, index);
+
+            validateCommandName(commandLine, commands[i].commandName, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
+            validateCommandOption(commandLine, commands[i].commandOpt, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
+            validateStreams(commandLine, commands[i].streams, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
             index++;
         }
-
-        // napraviti poseban lexical za pipe
-        hasErrors |= catchLexicalError(partOfCommandLine, commands[i]);
     }
-
-    /*for (int i = index; i < lineLength; i++) {
-        mistakes[i] = '^';
-        hasErrors = true;
-    }
-
-    if (hasErrors) {
-        std::cerr << "Error - unexpected characters:" << std::endl << commandLine << std::endl;
+    catch (std::exception e) {
+        std::cerr << "Error - " << e.what() << ":" << std::endl << commandLine << std::endl;
         for (int i = 0; i < lineLength; i++) {
             std::cerr << mistakes[i];
         }
         std::cerr << std::endl;
-    }*/
+        delete[] mistakes;
+        return true;
+    }
 
-    return hasErrors;
+    delete[] mistakes;
+    return false;
 }
 
 

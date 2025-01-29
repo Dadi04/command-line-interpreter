@@ -4,6 +4,7 @@
 #include "ErrorHandling.h"
 #include <iostream>
 
+// to do
 // ne moze da ucitava pipeline trenutno
 void Batch::execute() {
 	std::string input;
@@ -54,7 +55,7 @@ void Batch::execute() {
 
 		Parser::ParsedCommand parsedCommand = commandParser.parseCommand(commandsArray[i]);
 		ErrorHandling* errorHandling = new ErrorHandling;
-		if (errorHandling->catchLexicalError(commandsArray[i], parsedCommand) || !errorHandling->validateCommand(parsedCommand)) {
+		if (errorHandling->catchErrors(commandsArray[i], parsedCommand) || !errorHandling->validateCommand(parsedCommand)) {
 			continue;
 		}
 		Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);

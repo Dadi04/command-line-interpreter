@@ -1,4 +1,3 @@
-#include "Interpreter.h"
 #include "Parser.h"
 #include "Command.h"
 #include "Factory.h"
@@ -9,7 +8,7 @@
 
 const int MAX_INPUT_LENGTH = 512;
 
-void Interpreter::run() {
+int main() {
 	Parser commandParser;
 	Factory factory;
 	ErrorHandling* errorHandling = new ErrorHandling;
@@ -42,29 +41,35 @@ void Interpreter::run() {
 
 		if (hasPipe) {
 			std::vector<Parser::ParsedCommand> parsedCommands = commandParser.parsePipeline(input);
-			if (errorHandling->catchPipeLexicalError(input, parsedCommands)) {
+			if (errorHandling->catchPipeErrors(input, parsedCommands)) {
 				continue;
 			}
+
 			std::vector<Command*> commands;
+			bool validationSuccess = true;
 
 			for (auto parsedCommand : parsedCommands) {
-				/*if (!errorHandling->validateCommand(parsedCommand)) {
-					continue;
-				}*/
+				if (!errorHandling->validateCommand(parsedCommand)) {
+					validationSuccess = false;
+					break;
+				}
 				Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 				if (!command) {
+					validationSuccess = false;
 					std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
 					break;
 				}
 				commands.push_back(command);
 			}
 
-			Pipeline pipeline(commands);
-			pipeline.execute();
+			if (validationSuccess) {
+				Pipeline pipeline(commands);
+				pipeline.execute();
+			}
 		}
 		else {
 			Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
-			if (errorHandling->catchLexicalError(input, parsedCommand)) {
+			if (errorHandling->catchErrors(input, parsedCommand)) {
 				continue;
 			}
 			if (!errorHandling->validateCommand(parsedCommand)) {
@@ -77,7 +82,7 @@ void Interpreter::run() {
 				std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
 				continue;
 			}
-			
+
 			command->execute();
 			delete command;
 		}
@@ -89,4 +94,6 @@ void Interpreter::run() {
 	}
 
 	delete errorHandling;
+
+	return 0;
 }
