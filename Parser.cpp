@@ -97,6 +97,9 @@ std::string Parser::readArgument(std::string input, int& i) {
 
 		i++;
 	}
+	if (!token.empty() && std::isspace(token.back())) {
+		token.pop_back();
+	}
 	return token;
 }
 

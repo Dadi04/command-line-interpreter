@@ -5,6 +5,10 @@
 void Touch::execute() {
 	ifBufferNotEmpty();
 
+	if (!RedirectInput(argument)) {
+		return;
+	}
+
 	std::ifstream file(argument);
 	if (file) {
 		std::cerr << "Error: File \"" << argument << "\" already exists." << std::endl;

@@ -5,6 +5,10 @@
 void Rm::execute() {
 	ifBufferNotEmpty();
 
+	if (!RedirectInput(argument)) {
+		return;
+	}
+
 	std::ifstream file(argument);
 	if (!file) {
 		std::cerr << "Error: File \"" << argument << "\" does not exist." << std::endl;

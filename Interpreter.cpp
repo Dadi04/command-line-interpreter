@@ -44,21 +44,16 @@ int main() {
 			if (errorHandling->catchPipeErrors(input, parsedCommands)) {
 				continue;
 			}
-
+			// ovde treba hvatati i semantice greske za pipeline
 			std::vector<Command*> commands;
 			bool validationSuccess = true;
 
 			for (auto parsedCommand : parsedCommands) {
-				if (!errorHandling->validateCommand(parsedCommand)) {
+				/*if (!errorHandling->validateCommand(parsedCommand)) {
 					validationSuccess = false;
 					break;
-				}
+				}*/
 				Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
-				if (!command) {
-					validationSuccess = false;
-					std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
-					break;
-				}
 				commands.push_back(command);
 			}
 
@@ -69,19 +64,11 @@ int main() {
 		}
 		else {
 			Parser::ParsedCommand parsedCommand = commandParser.parseCommand(input);
-			if (errorHandling->catchErrors(input, parsedCommand)) {
-				continue;
-			}
-			if (!errorHandling->validateCommand(parsedCommand)) {
+			if (errorHandling->catchErrors(input, parsedCommand) || !errorHandling->validateCommand(parsedCommand)) {
 				continue;
 			}
 
 			Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
-
-			if (!command) {
-				std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
-				continue;
-			}
 
 			command->execute();
 			delete command;

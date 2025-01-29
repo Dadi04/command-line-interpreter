@@ -2,6 +2,7 @@
 #include "Command.h"
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
     try {
@@ -12,7 +13,7 @@ bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
         it->second(parsedCommand);
     }
     catch (std::exception e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Error - " << e.what() << std::endl;
         return false;
     }
     return true;
@@ -28,8 +29,13 @@ void ErrorHandling::validatePrompt(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: prompt argument");
     }
-    else if (parsedCommand.commandArg.empty()) {
+
+    if (parsedCommand.commandArg.empty()) {
         throw std::runtime_error("The command takes an argument. Its format is: prompt argument");
+    }
+
+    if (parsedCommand.streams.size() != 0) {
+        throw std::runtime_error("The command does not take a redirection");
     }
 }
 
@@ -37,16 +43,27 @@ void ErrorHandling::validateTime(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: time");
     }
-    else if (!parsedCommand.commandArg.empty()) {
+    
+    if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
+        throw std::runtime_error("The command does not take an input redirection");
+    }
+
+    if (!parsedCommand.commandArg.empty()) {
         throw std::runtime_error("The command does not take an argument. Its format is: time");
     }
+    
 }
 
 void ErrorHandling::validateDate(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: date");
     }
-    else if (!parsedCommand.commandArg.empty()) {
+    
+    if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
+        throw std::runtime_error("The command does not take an input redirection");
+    }
+
+    if (!parsedCommand.commandArg.empty()) {
         throw std::runtime_error("The command does not take an argument. Its format is: date");
     }
 }
@@ -55,8 +72,13 @@ void ErrorHandling::validateTouch(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: touch filename");
     }
-    else if (parsedCommand.commandArg.empty()) {
+
+    if (parsedCommand.commandArg.empty()) {
         throw std::runtime_error("The command takes an argument. Its format is: touch argument");
+    }
+
+    if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
+        throw std::runtime_error("The command does not take an output redirection");
     }
 }
 
@@ -64,8 +86,13 @@ void ErrorHandling::validateTruncate(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: truncate filename");
     }
-    else if (parsedCommand.commandArg.empty()) {
+
+    if (parsedCommand.commandArg.empty()) {
         throw std::runtime_error("The command takes an argument. Its format is: truncate argument");
+    }
+
+    if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
+        throw std::runtime_error("The command does not take an output redirection");
     }
 }
 
@@ -73,8 +100,13 @@ void ErrorHandling::validateRm(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: rm filename");
     }
-    else if (parsedCommand.commandArg.empty()) {
+
+    if (parsedCommand.commandArg.empty()) {
         throw std::runtime_error("The command takes an argument. Its format is: rm argument");
+    }
+
+    if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
+        throw std::runtime_error("The command does not take an output redirection");
     }
 }
 
@@ -139,12 +171,22 @@ bool ErrorHandling::catchErrors(std::string commandLine, Parser::ParsedCommand c
             mistakes[i] = '^';
             throw std::runtime_error("Unexpected characters at the end of the command");
         }
+        if (!command.commandArg.empty() && 
+            (std::any_of(command.streams.begin(), command.streams.end(), [&command](Redirection stream) { return stream.file != command.commandArg; })) && 
+            (std::any_of(command.streams.begin(), command.streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; }))) {
+            throw std::runtime_error("The command can only take one input redirection");
+        }
     }
     catch (std::exception e) {
-        std::cerr << "Error - " << e.what() << ":" << std::endl << commandLine << std::endl;
-        for (int i = 0; i < lineLength; i++) {
-            std::cerr << mistakes[i];
+        std::cerr << "Error - " << e.what();
+
+        if (!std::all_of(mistakes, mistakes + lineLength, [](char c) { return c == ' '; })) {
+            std::cerr << ":" << std::endl << commandLine << std::endl;
+            for (int i = 0; i < lineLength; i++) {
+                std::cerr << mistakes[i];
+            }
         }
+
         std::cerr << std::endl;
         delete[] mistakes;
         return true;
@@ -224,8 +266,8 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                 }
             }
         }
+        index += argument.length();
     }
-    index += argument.length();
 }
 
 void ErrorHandling::validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index) {
@@ -315,7 +357,7 @@ void ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirec
     }
 }
 
-// needs fix - to do
+// logicke greske tipa ima vise argumenata u komandi, vise izlaznih redirekcija/argumenata itd
 bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser::ParsedCommand> commands) {
     int lineLength = commandLine.length();
     char* mistakes = new char[lineLength + 1];

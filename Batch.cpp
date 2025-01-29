@@ -60,11 +60,6 @@ void Batch::execute() {
 		}
 		Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 
-		if (!command) {
-			std::cerr << "Unknown command: \"" << parsedCommand.commandName << "\"" << std::endl;
-			continue;
-		}
-
 		command->execute();
 		delete command;
 		delete errorHandling;
