@@ -31,7 +31,8 @@ void Pipeline::execute() {
         std::string output = commands.back()->getBuffer();
         if (!output.empty() && output.front() == '"' && output.back() == '"') {
             output = output.substr(1, output.size() - 2);
-            std::cout << output << std::endl;
+            commands.back()->setBuffer(nullptr);
+            commands.back()->print(output);
         }
     }
 }

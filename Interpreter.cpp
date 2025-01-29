@@ -44,7 +44,6 @@ int main() {
 			if (errorHandling->catchPipeErrors(input, parsedCommands)) {
 				continue;
 			}
-			// ovde treba hvatati i semantice greske za pipeline
 			std::vector<Command*> commands;
 			bool validationSuccess = true;
 

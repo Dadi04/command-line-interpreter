@@ -5,8 +5,10 @@
 void Truncate::execute() {
 	ifBufferNotEmpty();
 
-	if (!RedirectInput(argument)) {
-		return;
+	RedirectInput(argument);
+
+	if (argument.front() == '"' && argument.back() == '"') {
+		argument = argument.substr(1, argument.size() - 2);
 	}
 
 	std::ifstream file(argument);

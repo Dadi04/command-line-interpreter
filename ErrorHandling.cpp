@@ -246,7 +246,7 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                     }
                 }
                 for (int i = secondQuote + 1; i < commandLine.length(); i++) {
-                    if (commandLine[i] == '>' || commandLine[i] == '<') {
+                    if (commandLine[i] == '>' || commandLine[i] == '<' || commandLine[i] == '|') {
                         break;
                     }
                     if (!std::isspace(commandLine[i]) && commandLine[i] != '\t') {
@@ -272,7 +272,9 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
 
 void ErrorHandling::validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index) {
 
-    // to do
+    for (int i = 0; i < argument.length(); i++) {
+        index++;
+    }
 
 }
 
@@ -368,6 +370,22 @@ bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser:
     int index = 0;
     try {
         for (int i = 0; i < commands.size(); i++) {
+            if (i == 0) {
+                if (std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
+                    throw std::runtime_error("First command in the pipeline does not accept output redirection");
+                }
+            }
+            else if (i == commands.size() - 1) {
+                if (!commands[i].commandArg.empty() || std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
+                    throw std::runtime_error("Last command in the pipeline does not accept argument or input redirection");
+                }
+            }
+            else {
+                if (!commands[i].commandArg.empty() || !commands[i].streams.empty()) {
+                    throw std::runtime_error("Commands between first and last in the pipeline do not accept argument or redirections");
+                }
+            }
+
             skipWhiteSpace(commandLine, index);
 
             validateCommandName(commandLine, commands[i].commandName, mistakes, index);
@@ -375,6 +393,18 @@ bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser:
             skipWhiteSpace(commandLine, index);
 
             validateCommandOption(commandLine, commands[i].commandOpt, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
+            if (commands[i].commandName.find("tr") != std::string::npos) {
+                validateCommandArgumentTr(commandLine, commands[i].commandArg, mistakes, index);
+            }
+            else if (commands[i].commandName.find("batch") != std::string::npos) {
+                validateCommandArgumentBatch(commandLine, commands[i].commandArg, mistakes, index);
+            }
+            else {
+                validateCommandArgument(commandLine, commands[i].commandArg, mistakes, index);
+            }
 
             skipWhiteSpace(commandLine, index);
 
@@ -386,10 +416,15 @@ bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser:
         }
     }
     catch (std::exception e) {
-        std::cerr << "Error - " << e.what() << ":" << std::endl << commandLine << std::endl;
-        for (int i = 0; i < lineLength; i++) {
-            std::cerr << mistakes[i];
+        std::cerr << "Error - " << e.what();
+
+        if (!std::all_of(mistakes, mistakes + lineLength, [](char c) { return c == ' '; })) {
+            std::cerr << ":" << std::endl << commandLine << std::endl;
+            for (int i = 0; i < lineLength; i++) {
+                std::cerr << mistakes[i];
+            }
         }
+
         std::cerr << std::endl;
         delete[] mistakes;
         return true;
