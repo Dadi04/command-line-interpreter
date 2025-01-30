@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <regex>
 
 bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
     try {
@@ -153,10 +154,10 @@ bool ErrorHandling::catchErrors(std::string commandLine, Parser::ParsedCommand c
 
         skipWhiteSpace(commandLine, index);
 
-        if (command.commandName.find("tr") != std::string::npos) {
+        if (command.commandName == "tr") {
             validateCommandArgumentTr(commandLine, command.commandArg, mistakes, index);
         }
-        else if (command.commandName.find("batch") != std::string::npos) {
+        else if (command.commandName == "batch") {
             validateCommandArgumentBatch(commandLine, command.commandArg, mistakes, index);
         }
         else {
@@ -219,7 +220,7 @@ void ErrorHandling::validateCommandOption(std::string commandLine, std::string o
             for (int i = 1; i < option.length(); i++) {
                 if (index < commandLine.length() && !std::isalpha(option[i]) && !std::isdigit(option[i])) {
                     mistakes[index] = '^';
-                    throw std::runtime_error("Invalid characters in command option");
+                    throw std::runtime_error("Invalid character in command option");
                 }
                 index++;
             }
@@ -242,7 +243,7 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                 for (int i = index; i < firstQuote; i++) {
                     if (!std::isspace(commandLine[i]) && commandLine[i] != '\t') {
                         mistakes[i] = '^';
-                        throw std::runtime_error("Unexpected characters before quoted argument");
+                        throw std::runtime_error("Unexpected character before quoted argument");
                     }
                 }
                 for (int i = secondQuote + 1; i < commandLine.length(); i++) {
@@ -251,7 +252,7 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                     }
                     if (!std::isspace(commandLine[i]) && commandLine[i] != '\t') {
                         mistakes[i] = '^';
-                        throw std::runtime_error("Unexpected characters after quoted argument");
+                        throw std::runtime_error("Unexpected character after quoted argument");
                     }
                 }
             }
@@ -261,7 +262,7 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
                 for (int i = 0; i < argument.length(); i++) {
                     if (std::isspace(argument[i])) {
                         mistakes[index + i] = '^';
-                        throw std::runtime_error("Spaces are not allowed in the argument");
+                        throw std::runtime_error("Spaces are not allowed in the filename");
                     }
                 }
             }
@@ -271,11 +272,65 @@ void ErrorHandling::validateCommandArgument(std::string commandLine, std::string
 }
 
 void ErrorHandling::validateCommandArgumentTr(std::string commandLine, std::string argument, char* mistakes, int& index) {
-
-    for (int i = 0; i < argument.length(); i++) {
+    if (commandLine[index] == '"') {
         index++;
+        for (int i = 1; i < argument.length(); i++) {
+            if (argument[i] != '"') {
+                index++;
+            }
+            else {
+                index++;
+                break;
+            }
+        }
+    }
+    else if (std::isalnum(commandLine[index])) {
+        std::string filename;
+        int tempIndex = -1, quote = commandLine.find('"', index), firstCharOfArg = index, lastCharOfArg;
+        for (int i = 0; i < argument.length(); i++) {
+            if (std::isspace(argument[i])) {
+                tempIndex = index;
+                index++;
+                break;
+            }
+            filename += argument[i];
+            index++;
+        }
+        lastCharOfArg = index;
+        if (commandLine[index] != '"') {
+            mistakes[tempIndex] = '^';
+            throw std::runtime_error("Unexpected character in argument");
+        } 
+        if (quote > firstCharOfArg && quote < lastCharOfArg) {
+            mistakes[firstCharOfArg] = '^';
+            throw std::runtime_error("Unexpected character in argument");
+        }
+    }
+    else {
+        mistakes[index] = '^';
+        throw std::runtime_error("Unexpected character in argument");
     }
 
+    skipWhiteSpace(commandLine, index);
+    for (int i = 0; i < 2; i++) {
+        if (commandLine[index] == '"' && index < commandLine.length()) {
+            index++;
+            for (int j = 1; j < argument.length(); j++) {
+                if (commandLine[index] != '"') {
+                    index++;
+                }
+                else {
+                    index++;
+                    break;
+                }
+            }
+        }
+        else if (index < commandLine.length()) {
+            mistakes[index] = '^';
+            throw std::runtime_error("Unexpected character");
+        }
+        skipWhiteSpace(commandLine, index);
+    }
 }
 
 void ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::string argument, char* mistakes, int& index) {
@@ -286,14 +341,14 @@ void ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::s
         for (int i = 0; i < firstQuote; i++) {
             if (!std::isspace(argument[i]) && argument[i] != '\t') {
                 mistakes[index + i] = '^';
-                throw std::runtime_error("Unexpected characters before quoted argument");
+                throw std::runtime_error("Unexpected character before quoted argument");
             }
         }
 
         for (int i = lastQuote + 1; i < argument.size(); i++) {
             if (!std::isspace(argument[i]) && argument[i] != '\t') {
                 mistakes[index + i] = '^';
-                throw std::runtime_error("Unexpected characters after quoted argument");
+                throw std::runtime_error("Unexpected character after quoted argument");
             }
         }
     }
