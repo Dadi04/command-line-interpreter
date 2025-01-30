@@ -76,10 +76,10 @@ void Batch::execute() {
 			bool validationSuccess = true;
 
 			for (auto parsedCommand : parsedCommands) {
-				/*if (!errorHandling->validateCommand(parsedCommand)) {
+				if (!errorHandling->validateCommand(parsedCommand)) {
 					validationSuccess = false;
 					break;
-				}*/
+				}
 				Command* command = factory.createCommand(parsedCommand.commandName, parsedCommand.commandOpt, parsedCommand.commandArg, parsedCommand.streams);
 				commands.push_back(command);
 			}

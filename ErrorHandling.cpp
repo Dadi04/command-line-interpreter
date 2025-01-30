@@ -5,6 +5,11 @@
 #include <algorithm>
 #include <regex>
 
+// isproveravati buffere ukoliko nisu prazni baciti runtime_error, npr komanda echo "goran" | time ne treba da radi
+// 	if (!ifBufferNotEmpty().empty()) {
+//          throw std::runtime_error("The command takes an argument. Its format is: );
+//  }
+
 bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
     try {
         auto it = validators.find(parsedCommand.commandName);

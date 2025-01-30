@@ -8,7 +8,7 @@ void Date::execute() {
 	struct tm currentDate;
 
 	if (localtime_s(&currentDate, &timestamp) == 0) {
-		char dateString[11];
+		char dateString[12];
 		strftime(dateString, sizeof(dateString), "%d.%m.%Y.", &currentDate);
 
 		print(dateString);
