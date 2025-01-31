@@ -204,22 +204,6 @@ bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser:
     int index = 0;
     try {
         for (int i = 0; i < commands.size(); i++) {
-            if (i == 0) {
-                if (std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
-                    throw std::runtime_error("First command in the pipeline does not accept output redirection");
-                }
-            }
-            else if (i == commands.size() - 1) {
-                if (!commands[i].commandArg.empty() || std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
-                    throw std::runtime_error("Last command in the pipeline does not accept argument or input redirection");
-                }
-            }
-            else {
-                if (!commands[i].commandArg.empty() || !commands[i].streams.empty()) {
-                    throw std::runtime_error("Commands between first and last in the pipeline do not accept argument or redirections");
-                }
-            }
-
             skipWhiteSpace(commandLine, index);
 
             validateCommandName(commandLine, commands[i].commandName, mistakes, index);
@@ -247,6 +231,28 @@ bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser:
             skipWhiteSpace(commandLine, index);
 
             index++;
+
+            if (i == 0) {
+                if (std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
+                    throw std::runtime_error("First command in the pipeline does not accept output redirection");
+                }
+            }
+            else if (i == commands.size() - 1) {
+                if (!commands[i].commandArg.empty() || std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
+                    std::regex pattern(R"(^"\S+" "\S+"$)");
+                    if (commands[i].commandName == "tr" && !std::regex_match(commands[i].commandArg, pattern)) {
+                        throw std::runtime_error("Last command in the pipeline does not accept argument or input redirection");
+                    }
+                }
+            }
+            else {
+                if (!commands[i].commandArg.empty() || !commands[i].streams.empty()) {
+                    std::regex pattern(R"(^"\S+" "\S+"$)");
+                    if (commands[i].commandName == "tr" && !std::regex_match(commands[i].commandArg, pattern)) {
+                        throw std::runtime_error("Commands between first and last in the pipeline do not accept argument or redirections");
+                    }
+                }
+            }
         }
     }
     catch (std::exception e) {
@@ -396,6 +402,9 @@ void ErrorHandling::validateCommandArgumentTr(std::string commandLine, std::stri
                 }
             }
         }
+        else if (commandLine[index] == '|' && index < commandLine.length()) {
+            break;
+        }
         else if (index < commandLine.length()) {
             mistakes[index] = '^';
             throw std::runtime_error("Unexpected character");
@@ -484,5 +493,4 @@ void ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirec
         }
     }
 }
-
 

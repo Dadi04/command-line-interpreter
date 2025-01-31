@@ -55,6 +55,8 @@ private:
 	void validateTr(Parser::ParsedCommand parsedCommand);
 	void validateHead(Parser::ParsedCommand parsedCommand);
 	void validateBatch(Parser::ParsedCommand parsedCommand);
+
+	bool checkWhatAndWith(std::string argument);
 };
 
 #endif
