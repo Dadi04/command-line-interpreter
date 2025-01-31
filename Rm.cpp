@@ -7,8 +7,12 @@ void Rm::execute() {
 
 	RedirectInput(argument);
 
-	if (argument.front() == '"' && argument.back() == '"') {
+	if (!argument.empty() && argument.front() == '"' && argument.back() == '"') {
 		argument = argument.substr(1, argument.size() - 2);
+	}
+	else if (argument.empty()) {
+		std::cerr << "Error: Command needs an argument. Its format is: rm argument" << std::endl;
+		return;
 	}
 
 	std::ifstream file(argument);

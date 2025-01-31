@@ -19,6 +19,12 @@ void Pipeline::execute() {
             command->setBuffer(&buffer);
         }
 
+        // upitno ali resava problem; echo "goran" | time ne bi trebalo da radi, u sustini sve komande koje ne zahtevaju argument (time, date)
+        if ((command->getName() == "time" || command->getName() == "date") && !command->getBuffer().empty()) {
+            std::cerr << "The command does not accept piped input." << std::endl;
+            return;
+        }
+
         command->execute();
 
         if (i < commands.size() - 1) {

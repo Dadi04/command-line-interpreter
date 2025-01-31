@@ -7,8 +7,12 @@ void Truncate::execute() {
 
 	RedirectInput(argument);
 
-	if (argument.front() == '"' && argument.back() == '"') {
+	if (!argument.empty() && argument.front() == '"' && argument.back() == '"') {
 		argument = argument.substr(1, argument.size() - 2);
+	}
+	else if (argument.empty()) {
+		std::cerr << "Error: Command needs an argument. Its format is: truncate argument" << std::endl;
+		return;
 	}
 
 	std::ifstream file(argument);

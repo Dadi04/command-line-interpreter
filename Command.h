@@ -17,7 +17,7 @@ public:
 
 	void setBuffer(std::stringstream* buffer);
 	std::string getBuffer();
-
+	std::string getName();
 	std::vector<Redirection> getStreams();
 protected:
 	bool RedirectInput(std::string& input);

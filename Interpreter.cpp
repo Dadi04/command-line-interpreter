@@ -22,7 +22,6 @@ int main() {
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			std::cerr << "Input exceeds the maximum length of " << MAX_INPUT_LENGTH << " characters." << std::endl;
-			continue;
 		}
 
 		if (input[0] == '\0') continue;

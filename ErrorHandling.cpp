@@ -5,11 +5,6 @@
 #include <algorithm>
 #include <regex>
 
-// isproveravati buffere ukoliko nisu prazni baciti runtime_error, npr komanda echo "goran" | time ne treba da radi
-// 	if (!ifBufferNotEmpty().empty()) {
-//          throw std::runtime_error("The command takes an argument. Its format is: );
-//  }
-
 bool ErrorHandling::validateCommand(Parser::ParsedCommand parsedCommand) {
     try {
         auto it = validators.find(parsedCommand.commandName);
@@ -34,10 +29,6 @@ void ErrorHandling::validateEcho(Parser::ParsedCommand parsedCommand) {
 void ErrorHandling::validatePrompt(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: prompt argument");
-    }
-
-    if (parsedCommand.commandArg.empty()) {
-        throw std::runtime_error("The command takes an argument. Its format is: prompt argument");
     }
 
     if (parsedCommand.streams.size() != 0) {
@@ -79,10 +70,6 @@ void ErrorHandling::validateTouch(Parser::ParsedCommand parsedCommand) {
         throw std::runtime_error("The command does not take an option. Its format is: touch filename");
     }
 
-    if (parsedCommand.commandArg.empty()) {
-        throw std::runtime_error("The command takes an argument. Its format is: touch argument");
-    }
-
     if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
         throw std::runtime_error("The command does not take an output redirection");
     }
@@ -91,10 +78,6 @@ void ErrorHandling::validateTouch(Parser::ParsedCommand parsedCommand) {
 void ErrorHandling::validateTruncate(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command does not take an option. Its format is: truncate filename");
-    }
-
-    if (parsedCommand.commandArg.empty()) {
-        throw std::runtime_error("The command takes an argument. Its format is: truncate argument");
     }
 
     if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
@@ -107,10 +90,6 @@ void ErrorHandling::validateRm(Parser::ParsedCommand parsedCommand) {
         throw std::runtime_error("The command does not take an option. Its format is: rm filename");
     }
 
-    if (parsedCommand.commandArg.empty()) {
-        throw std::runtime_error("The command takes an argument. Its format is: rm argument");
-    }
-
     if (std::any_of(parsedCommand.streams.begin(), parsedCommand.streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
         throw std::runtime_error("The command does not take an output redirection");
     }
@@ -119,6 +98,9 @@ void ErrorHandling::validateRm(Parser::ParsedCommand parsedCommand) {
 void ErrorHandling::validateWc(Parser::ParsedCommand parsedCommand) {
     if (parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command takes an option. Its format is: wc -opt [argument]");
+    }
+    if (parsedCommand.commandOpt != "-c" && parsedCommand.commandOpt != "-w") {
+        throw std::runtime_error("Incorrect option. Available options are: -c and -w");
     }
 }
 
@@ -131,6 +113,16 @@ void ErrorHandling::validateTr(Parser::ParsedCommand parsedCommand) {
 void ErrorHandling::validateHead(Parser::ParsedCommand parsedCommand) {
     if (parsedCommand.commandOpt.empty()) {
         throw std::runtime_error("The command takes an option. Its format is: head -ncount [argument]");
+    }
+
+    if (parsedCommand.commandOpt.find("-n", 0) != 0) {
+        throw std::runtime_error("Incorrect option. Available option is: -ncount");
+    }
+    else {
+        int n = stoi(parsedCommand.commandOpt.substr(2, parsedCommand.commandOpt.length() - 2));
+        if (n <= 0 || n >= 100000) {
+            throw std::runtime_error("n count is either smaller than 1 or bigger than 99999");
+        }
     }
 }
 
@@ -181,6 +173,80 @@ bool ErrorHandling::catchErrors(std::string commandLine, Parser::ParsedCommand c
             (std::any_of(command.streams.begin(), command.streams.end(), [&command](Redirection stream) { return stream.file != command.commandArg; })) && 
             (std::any_of(command.streams.begin(), command.streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; }))) {
             throw std::runtime_error("The command can only take one input redirection");
+        }
+    }
+    catch (std::exception e) {
+        std::cerr << "Error - " << e.what();
+
+        if (!std::all_of(mistakes, mistakes + lineLength, [](char c) { return c == ' '; })) {
+            std::cerr << ":" << std::endl << commandLine << std::endl;
+            for (int i = 0; i < lineLength; i++) {
+                std::cerr << mistakes[i];
+            }
+        }
+
+        std::cerr << std::endl;
+        delete[] mistakes;
+        return true;
+    }
+
+    delete[] mistakes;
+    return false;
+}
+
+bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser::ParsedCommand> commands) {
+    int lineLength = commandLine.length();
+    char* mistakes = new char[lineLength + 1];
+    for (int i = 0; i < lineLength; i++) {
+        mistakes[i] = ' ';
+    }
+
+    int index = 0;
+    try {
+        for (int i = 0; i < commands.size(); i++) {
+            if (i == 0) {
+                if (std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
+                    throw std::runtime_error("First command in the pipeline does not accept output redirection");
+                }
+            }
+            else if (i == commands.size() - 1) {
+                if (!commands[i].commandArg.empty() || std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
+                    throw std::runtime_error("Last command in the pipeline does not accept argument or input redirection");
+                }
+            }
+            else {
+                if (!commands[i].commandArg.empty() || !commands[i].streams.empty()) {
+                    throw std::runtime_error("Commands between first and last in the pipeline do not accept argument or redirections");
+                }
+            }
+
+            skipWhiteSpace(commandLine, index);
+
+            validateCommandName(commandLine, commands[i].commandName, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
+            validateCommandOption(commandLine, commands[i].commandOpt, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
+            if (commands[i].commandName.find("tr") != std::string::npos) {
+                validateCommandArgumentTr(commandLine, commands[i].commandArg, mistakes, index);
+            }
+            else if (commands[i].commandName.find("batch") != std::string::npos) {
+                validateCommandArgumentBatch(commandLine, commands[i].commandArg, mistakes, index);
+            }
+            else {
+                validateCommandArgument(commandLine, commands[i].commandArg, mistakes, index);
+            }
+
+            skipWhiteSpace(commandLine, index);
+
+            validateStreams(commandLine, commands[i].streams, mistakes, index);
+
+            skipWhiteSpace(commandLine, index);
+
+            index++;
         }
     }
     catch (std::exception e) {
@@ -418,81 +484,5 @@ void ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirec
         }
     }
 }
-
-// logicke greske tipa ima vise argumenata u komandi, vise izlaznih redirekcija/argumenata itd
-bool ErrorHandling::catchPipeErrors(std::string commandLine, std::vector<Parser::ParsedCommand> commands) {
-    int lineLength = commandLine.length();
-    char* mistakes = new char[lineLength + 1];
-    for (int i = 0; i < lineLength; i++) {
-        mistakes[i] = ' ';
-    }
-
-    int index = 0;
-    try {
-        for (int i = 0; i < commands.size(); i++) {
-            if (i == 0) {
-                if (std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return (stream.type == Redirection::Output || stream.type == Redirection::Append); })) {
-                    throw std::runtime_error("First command in the pipeline does not accept output redirection");
-                }
-            }
-            else if (i == commands.size() - 1) {
-                if (!commands[i].commandArg.empty() || std::any_of(commands[i].streams.begin(), commands[i].streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; })) {
-                    throw std::runtime_error("Last command in the pipeline does not accept argument or input redirection");
-                }
-            }
-            else {
-                if (!commands[i].commandArg.empty() || !commands[i].streams.empty()) {
-                    throw std::runtime_error("Commands between first and last in the pipeline do not accept argument or redirections");
-                }
-            }
-
-            skipWhiteSpace(commandLine, index);
-
-            validateCommandName(commandLine, commands[i].commandName, mistakes, index);
-
-            skipWhiteSpace(commandLine, index);
-
-            validateCommandOption(commandLine, commands[i].commandOpt, mistakes, index);
-
-            skipWhiteSpace(commandLine, index);
-
-            if (commands[i].commandName.find("tr") != std::string::npos) {
-                validateCommandArgumentTr(commandLine, commands[i].commandArg, mistakes, index);
-            }
-            else if (commands[i].commandName.find("batch") != std::string::npos) {
-                validateCommandArgumentBatch(commandLine, commands[i].commandArg, mistakes, index);
-            }
-            else {
-                validateCommandArgument(commandLine, commands[i].commandArg, mistakes, index);
-            }
-
-            skipWhiteSpace(commandLine, index);
-
-            validateStreams(commandLine, commands[i].streams, mistakes, index);
-
-            skipWhiteSpace(commandLine, index);
-
-            index++;
-        }
-    }
-    catch (std::exception e) {
-        std::cerr << "Error - " << e.what();
-
-        if (!std::all_of(mistakes, mistakes + lineLength, [](char c) { return c == ' '; })) {
-            std::cerr << ":" << std::endl << commandLine << std::endl;
-            for (int i = 0; i < lineLength; i++) {
-                std::cerr << mistakes[i];
-            }
-        }
-
-        std::cerr << std::endl;
-        delete[] mistakes;
-        return true;
-    }
-
-    delete[] mistakes;
-    return false;
-}
-
 
 

@@ -17,7 +17,7 @@ void Head::execute() {
 
 	RedirectInput(input);
 
-	if (!option.empty() && option.rfind("-n", 0) == 0) {
+	if (!option.empty() && option.find("-n", 0) == 0) {
 		int n = stoi(option.substr(2, option.length() - 2));
 		if (n > 0 && n < 100000) {
 			std::istringstream stream(input);

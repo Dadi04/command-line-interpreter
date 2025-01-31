@@ -58,6 +58,10 @@ std::string Command::getBuffer() {
 	return this->buffer->str();
 }
 
+std::string Command::getName() {
+	return this->name;
+}
+
 std::vector<Redirection> Command::getStreams() {
 	return this->streams;
 }
