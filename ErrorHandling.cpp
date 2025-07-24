@@ -138,6 +138,7 @@ bool ErrorHandling::catchErrors(std::string commandLine, Parser::ParsedCommand c
     for (int i = 0; i < lineLength; i++) {
         mistakes[i] = ' ';
     }
+    mistakes[lineLength] = '\0';
 
     int index = 0;
     try {
@@ -170,8 +171,9 @@ bool ErrorHandling::catchErrors(std::string commandLine, Parser::ParsedCommand c
             throw std::runtime_error("Unexpected characters at the end of the command");
         }
         if (!command.commandArg.empty() && 
-            (std::any_of(command.streams.begin(), command.streams.end(), [&command](Redirection stream) { return stream.file != command.commandArg; })) && 
-            (std::any_of(command.streams.begin(), command.streams.end(), [](Redirection stream) { return stream.type == Redirection::Input; }))) {
+            std::any_of(command.streams.begin(), command.streams.end(), [&command](Redirection stream) { 
+                return stream.type == Redirection::Input && stream.file == command.commandArg; 
+            })) {
             throw std::runtime_error("The command can only take one input redirection");
         }
     }
@@ -448,30 +450,35 @@ void ErrorHandling::validateCommandArgumentBatch(std::string commandLine, std::s
 
 void ErrorHandling::validateStreams(std::string commandLine, std::vector<Redirection> streams, char* mistakes, int& index) {
     if (!streams.empty()) {
-        std::string streamFile1, streamFile2;
-        if (streams.size() == 1) {
-            streamFile1 = streams[0].file;
-        }
-        else if (streams.size() == 2) {
-            streamFile2 = streams[1].file;
-        }
         while (index < commandLine.length()) {
+            skipWhiteSpace(commandLine, index);
+
             if (commandLine[index] == '>' || commandLine[index] == '<') {
                 char redirectionType = commandLine[index];
                 index++;
 
+                bool isAppend = false;
                 if (redirectionType == '>' && index < commandLine.length() && commandLine[index] == '>') {
                     index++;
+                    isAppend = true;
                 }
 
                 skipWhiteSpace(commandLine, index);
 
                 std::string fileName;
-                if (redirectionType == '>') {
-                    fileName = (!streamFile1.empty() ? streamFile1 : streamFile2);
-                }
-                else if (redirectionType == '<') {
-                    fileName = (!streamFile2.empty() ? streamFile2 : streamFile1);
+                for (const auto& stream : streams) {
+                    if (redirectionType == '<' && stream.type == Redirection::Input) {
+                        fileName = stream.file;
+                        break;
+                    }
+                    else if (redirectionType == '>' && !isAppend && stream.type == Redirection::Output) {
+                        fileName = stream.file;
+                        break;
+                    }
+                    else if (redirectionType == '>' && isAppend && stream.type == Redirection::Append) {
+                        fileName = stream.file;
+                        break;
+                    }
                 }
 
                 if (fileName.empty()) {

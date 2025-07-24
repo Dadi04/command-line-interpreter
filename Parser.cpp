@@ -29,10 +29,6 @@ Parser::ParsedCommand Parser::parseCommand(std::string input) {
 			parsedCommand.streams.push_back(redirection);
 		}
 		skipWhiteSpace(input, i);
-
-		if (redirection.type == Redirection::StreamType::Input && parsedCommand.commandArg.empty()) {
-			parsedCommand.commandArg = redirection.file;
-		}
 	}
 
 	return parsedCommand;

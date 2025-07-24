@@ -15,8 +15,6 @@ void Head::execute() {
 		if (input.empty()) return;
 	}
 
-	RedirectInput(input);
-
 	if (!option.empty() && option.find("-n", 0) == 0) {
 		int n = stoi(option.substr(2, option.length() - 2));
 		if (n > 0 && n < 100000) {

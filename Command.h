@@ -109,8 +109,6 @@ public:
 
 	void execute();
 	void print(std::string output);
-	std::string getWhat();
-	std::string getWith();
 private:
 	std::string what;
 	std::string with;

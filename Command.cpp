@@ -32,10 +32,16 @@ std::string Command::getArgumentType() {
 
 std::string Command::ifArgumentEmpty() {
 	if (argument.empty()) {
-		std::string line;
-		while (true) {
-			if (!std::getline(std::cin, line)) break;
-			argument += line + '\n';
+		std::string redirectedInput;
+		if (RedirectInput(redirectedInput)) {
+			argument = redirectedInput;
+		}
+		else {
+			std::string line;
+			while (true) {
+				if (!std::getline(std::cin, line)) break;
+				argument += line + '\n';
+			}
 		}
 	}
 

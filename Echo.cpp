@@ -14,8 +14,6 @@ void Echo::execute() {
 		if (input.empty()) return;
 	}
 
-	RedirectInput(input);
-
 	if (input.back() == '\n') {
 		input.pop_back();
 	}

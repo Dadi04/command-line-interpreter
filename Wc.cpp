@@ -14,8 +14,6 @@ void Wc::execute() {
 		if (input.empty()) return;
 	}
 
-	RedirectInput(input);
-
 	if (option == "-w") {
 		int wordCount = 0;
 		bool inWord = false;

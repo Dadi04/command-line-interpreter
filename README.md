@@ -29,7 +29,45 @@ The interpreter currently supports the following commands:
 
 ### Usage
 
-todo
+- Interactive Mode
+
+    Compile the project:
+    Use a C++ compiler (with C++11 or higher support) to compile the source code. For example:
+    ```bash
+        g++ -std=c++11 -o cli Interpreter.cpp
+    ```
+    Run the executable:
+    Launch the CLI interpreter by running:
+    ```bash
+        ./cli
+    ```
+    The interpreter will display a prompt (default is $), and you can start entering commands.
+
+- Batch Mode
+
+    To execute a list of commands stored in a text file, use the batch command followed by the file name:
+    ```bash
+        $ batch "commands.txt"
+    ```
+    The file commands.txt should contain one command per line. The interpreter will process these commands sequentially.
+
+- Input/Output Redirection and Piping
+    1. Redirection:
+        You can redirect the output of a command to a file using the > operator:
+        ```bash
+            $ wc -w "Sample text" > output.txt
+        ```
+        
+        Similarly, input redirection can be done using <:
+        ```bash
+            $ wc -w < input.txt
+        ```
+        
+    2. Piping:
+        Connect the output of one command directly into the input of another using the pipe symbol (|):
+        ```bash
+            $ time | tr ":" "." | wc -c > time.txt
+         ```
 
 ### Examples
 
@@ -60,6 +98,28 @@ todo
 
 ### Error Handling
 
-The interpreter provides feedback for incorrect commands or syntax errors. Some examples include:
+The interpreter is designed to provide informative feedback when errors occur. Errors may arise during lexical analysis, syntax checking, or execution. Here are the main categories:
 
-todo
+1. #### Lexical Errors:
+If invalid characters or unexpected symbols are encountered in the command, the interpreter will print an error message indicating the position of the first invalid character. For example:
+```bash
+    $ wc& -w "Lorem ipsum" +?
+    Error - unexpected characters:
+    wc& -w "Lorem ipsum" +?
+      ^
+```
+
+2. #### Uknown Commands: 
+If the entered command is not recognized, the interpreter outputs a message such as:
+```bash
+    Unknown command: [command]
+```
+
+3. #### Syntax Errors:
+If the command format does not adhere to the specified structure (e.g., missing quotes for arguments with spaces), an appropriate syntax error message is displayed.
+
+4. #### Execution Errors:
+Errors during execution (such as attempting to delete a non-existent file or issues with file permissions) are caught, and corresponding error messages are shown.
+
+5. #### Redirection/Piping Conflicts:
+If a command incorrectly combines arguments and redirections (or pipes), the interpreter will reject the command and print an error message, ensuring that the input or output stream is not ambiguously defined.
