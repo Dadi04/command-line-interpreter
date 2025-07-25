@@ -28,7 +28,15 @@ void ErrorHandling::validateEcho(Parser::ParsedCommand parsedCommand) {
 
 void ErrorHandling::validatePrompt(Parser::ParsedCommand parsedCommand) {
     if (!parsedCommand.commandOpt.empty()) {
-        throw std::runtime_error("The command does not take an option. Its format is: prompt argument");
+        throw std::runtime_error("The command does not take an option. Its format is: prompt \"argument\"");
+    }
+
+    if (parsedCommand.commandArg.empty()) {
+        throw std::runtime_error("The command requires a quoted argument. Its format is: prompt \"argument\"");
+    }
+
+    if (parsedCommand.commandArg.front() != '"' || parsedCommand.commandArg.back() != '"') {
+        throw std::runtime_error("The argument must be enclosed in quotes. Its format is: prompt \"argument\"");
     }
 
     if (parsedCommand.streams.size() != 0) {
